@@ -20,6 +20,7 @@ export class BoardContainerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.activePlayer = this.gameService.getMyPlayer();
     this.myId = this.gameService.getMyPlayer().id;
     this.hostId = this.peerToPeerService.getHostId();
     this.gameServiceState = this.gameService.state;

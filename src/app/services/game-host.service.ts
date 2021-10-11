@@ -30,12 +30,6 @@ export class GameHostService {
     private peerToPeerService: PeerToPeerService,
     private gameService: GameService
   ) {
-  }
-
-  async createGame() {
-    this.dispose();
-    await this.peerToPeerService.setupAsHost();
-
     this.subs = [
       this.peerToPeerService.connectionAdded.subscribe(() => this.updateSharedState()),
       this.peerToPeerService.connectionRemoved.subscribe(() => this.updateSharedState()),
@@ -86,6 +80,11 @@ export class GameHostService {
     ];
   }
 
+  async createGame() {
+    this.dispose();
+    await this.peerToPeerService.setupAsHost();
+  }
+
   async startGame() {
     this.peerToPeerService.broadcastAndToSelf({
       command: 'GAME_START',
@@ -102,7 +101,7 @@ export class GameHostService {
   }
 
   dispose() {
-    this.subs?.forEach(t => t.unsubscribe());
+    //this.subs?.forEach(t => t.unsubscribe());
     this.state = GameHostService.getDefaultState();
   }
 
@@ -147,11 +146,11 @@ export class GameHostService {
 
   private addLetters(letters: Iterable<Letter>) {
     this.state.letters.concat([...letters]);
-    this.shuffleArray(this.state.letters);
+    GameHostService.shuffleArray(this.state.letters);
   }
 
   // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-  private shuffleArray(array: Array<any>) {
+  private static shuffleArray(array: Array<any>) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
@@ -182,6 +181,7 @@ export class GameHostService {
       let letter: Letter = String.fromCharCode('A'.charCodeAt(0)+i) as Letter;
       for (let j = 0; j < 2; ++j) letters.push(letter);
     }
+    GameHostService.shuffleArray(letters);
     return letters;
   }
 

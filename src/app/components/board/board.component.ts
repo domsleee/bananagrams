@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import interact from 'interactjs';
 import { SquareModel } from 'src/app/models/square-model';
-import { GRID_SIZE, Letter, START_AREA_ROWS } from 'src/app/shared/defs';
+import { GRID_SIZE, Letter, START_AREA_ROWS, TILE_SIZE } from 'src/app/shared/defs';
 import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
@@ -72,7 +72,15 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
           const x = square.x + event.dx;
           const y = square.y + event.dy;
 
-          this.setElementCoords(square, x, y);
+          const boardEl = document.getElementById('board');
+          const boardRec = boardEl.getBoundingClientRect();
+          const calcX = event.pageX - boardRec.left - (TILE_SIZE/2);
+          const calcY = event.pageY - boardRec.top - (TILE_SIZE/2);
+
+          //console.log(event.target.style);
+          //console.log('square,event', square.x, calcX, event.target.style.width, 'a', event);
+
+          this.setElementCoords(square, calcX, calcY);
         }
       },
       modifiers: [
