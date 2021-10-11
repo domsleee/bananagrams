@@ -11,6 +11,9 @@ import { InvalidSquareFinderService } from './invalid-square-finder.service';
 import { SubscribableQueue } from '../shared/subscribable-queue';
 import { PlayerModelUpdater } from '../shared/updaters/player-model-updater';
 import { getLogger } from 'loglevel';
+import { Router } from '@angular/router';
+import { RouteNames } from '../pages/routes';
+import { BoardState } from '../utils/board';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -37,12 +40,14 @@ export interface ISharedState {
 export class GameService {
   letter$ = new SubscribableQueue<Letter>();
   gameStart$ = new Subject<boolean>();
+  winner$ = new Subject<void>();
   subs: Array<Subscription> = [];
   state: GameServiceState = GameService.getInitialState();
 
   constructor(
     private peerToPeerService: PeerToPeerService,
-    private invalidSquareFinderService: InvalidSquareFinderService
+    private invalidSquareFinderService: InvalidSquareFinderService,
+    private router: Router
   ) { }
 
   initFromPeerToPeer() {
@@ -69,7 +74,8 @@ export class GameService {
           } break;
           case 'GAME_START': {
             this.letter$ = new SubscribableQueue<Letter>();
-            this.state.totalTilesInGame = message.data.totalTiles;
+            this.resetLocalState();
+            // this.state.totalTilesInGame = message.data.totalTiles;
             this.gameStart$.next(true);
           } break;
           case 'RECEIVE_LETTERS': {
@@ -86,11 +92,13 @@ export class GameService {
             player.isEliminated = true;
           } break;
           case 'WINNER': {
-            let player = this.getPlayerById(message.data.playerId);
-            this.state.winnerId = player.id;
+            this.winner$.next();
           } break;
           case 'UPDATE_SHARED_STATE': {
             Object.assign(this.state, message.data.state);
+          } break;
+          case 'RETURN_TO_LOBBY': {
+            this.router.navigate([RouteNames.LOBBY + '/' + this.peerToPeerService.getHostId()]);
           } break;
         }
       })
@@ -101,6 +109,15 @@ export class GameService {
     this.state = GameService.getInitialState();
     this.subs.forEach(t => t.unsubscribe);
     this.subs = [];
+  }
+
+  private resetLocalState() {
+    this.state.players.forEach(player => {
+      player.boardState = new BoardState();
+      player.tilesUsed = 0;
+      player.isEliminated = false;
+    });
+    this.state.canClaimSuccess = false;
   }
 
   updatePlayer(name: string) {
@@ -114,7 +131,6 @@ export class GameService {
 
   updateAfterDrop() {
     let player = this.getMyPlayer();
-    window['squares'] = player.boardState.squares;
     player.tilesUsed = player.boardState.squares.reduce((a, sq) => a + (sq.dropzoneRef?.id < GRID_SIZE * GRID_SIZE ? 1 : 0), 0);
     this.state.canClaimSuccess = player.tilesUsed === player.totalTiles;
     this.sendUpdateMessage(this.getMyPlayer());
@@ -174,7 +190,7 @@ export class GameService {
     }
   }
 
-  private getPlayerById(playerId: string) {
+  getPlayerById(playerId: string) {
     return this.state.players.find(t => t.id == playerId);
   }
 }

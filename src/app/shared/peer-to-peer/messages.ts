@@ -4,7 +4,7 @@ import { Letter } from "../defs";
 
 
 export type IRequestData = IClaimSuccess | IDumpLetter | IUpdatePlayer;
-export type IResponseData = IReceiveLetters | IWinner | IGameStart | IUpdatePlayer | ILoser | IUpdateSharedState;
+export type IResponseData = IReceiveLetters | IWinner | IGameStart | IUpdatePlayer | ILoser | IUpdateSharedState | IReturnToLobby;
 
 // SHARED
 // ==================
@@ -41,7 +41,6 @@ interface IReceiveLetters {
 
 interface IWinner {
   command: 'WINNER';
-  playerId: string;
 };
 
 interface ILoser {
@@ -51,7 +50,6 @@ interface ILoser {
 
 interface IGameStart {
   command: 'GAME_START';
-  totalTiles: number;
 };
 
 interface IUpdateSharedState {
@@ -59,5 +57,8 @@ interface IUpdateSharedState {
   state: ISharedState;
 }
 
+interface IReturnToLobby {
+  command: 'RETURN_TO_LOBBY';
+};
 
 // request

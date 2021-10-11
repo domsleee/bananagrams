@@ -2,7 +2,11 @@
   <div>
     <button *ngFor="let player of gameServiceState.players"
       (click)="selectPlayer(player)"
-      [class.active]="activePlayer?.id === player.id">{{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}</button>
+      [class.active]="activePlayer?.id === player.id">
+        {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}<br />
+        {{player.tilesUsed}} / {{player.totalTiles}}
+      </button>
+    <button (click)="returnToLobby()">Return to lobby</button>
   </div>
 
   <div *ngFor="let player of gameServiceState.players">

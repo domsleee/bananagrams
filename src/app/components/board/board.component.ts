@@ -24,10 +24,12 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   letterSubscription: Subscription;
   lastSquare?: SquareModel;
 
+  private readonly clickHander;
   private squareIdCounter = 500;
 
   constructor(private gameService: GameService) {
     this.readonlyGameServiceState = gameService.state;
+    this.clickHander = this.clickEventListener.bind(this);
   }
 
   ngOnInit() {
@@ -35,6 +37,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.letterSubscription?.unsubscribe();
+    document.removeEventListener('click', this.clickHander);
   }
 
   get boardState() {
@@ -52,25 +55,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
     interact('.draggable').draggable({
       listeners: {
         start: (event) => {
-          const squareEl = event.target as HTMLElement;
-          const square = this.boardState.getSquareFromEl(squareEl);
-          square.dropzoneRef?.setActive(true);
-          this.updateLastSquare(square);
-          square.dropIndex = -1;
         },
         end: (event) => {
-          const square = this.boardState.getSquareFromEl(event.target);
-          square.dropzoneRef?.setActive(false);
-          this.gameService.updateAfterDrop();
-          square.dropIndex = -1;
-          if (event.relatedTarget) {
-            square.dropIndex = this.boardState.getDropzone(event.relatedTarget).id;
-          }
         },
         move: (event) => {
           const square = this.boardState.getSquareFromEl(event.target);
-          const x = square.x + event.dx;
-          const y = square.y + event.dy;
 
           const boardEl = document.getElementById('board');
           const boardRec = boardEl.getBoundingClientRect();
@@ -82,17 +71,24 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
 
           this.setElementCoords(square, calcX, calcY);
         }
-      },
-      modifiers: [
-        interact.modifiers.restrict({
-          restriction: 'parent',
-          endOnly: true
-        })
-      ]
+      }
     })
     .on('down', (event) => {
       const squareEl = event.target as HTMLElement;
-      this.updateLastSquare(this.boardState.getSquareFromEl(squareEl));
+      const square = this.boardState.getSquareFromEl(squareEl);
+      this.updateLastSquare(square);
+      square.dropzoneRef.setActive(true);
+      square.dropIndex = -1;
+    })
+    .on('up', (event) => {
+      const squareEl = event.target as HTMLElement;
+      const square = this.boardState.getSquareFromEl(squareEl);
+      square.dropzoneRef.setActive(false);
+      square.dropIndex = square.dropzoneRef.id;
+      this.gameService.updateAfterDrop();
+
+      const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropzoneRef.id}']`) as HTMLElement;
+      this.setCoordsBasedOnDropZone(square, dropzoneEl);
     });
 
     interact('.dropzone.droppable').dropzone({
@@ -100,7 +96,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       overlap: 0.25,
 
       ondragenter: (event) => {
-        event.target.classList.add('drop-target')
+        const squareEl = event.relatedTarget as HTMLElement;
+        const square = this.boardState.getSquareFromEl(squareEl);
+        square.dropzoneRef = this.boardState.getDropzone(event.target);
+        event.target.classList.add('drop-target');
       },
       ondragleave: function (event) {
         event.target.classList.remove('drop-target');
@@ -109,20 +108,17 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
         event.target.classList.remove('drop-target');
       },
       ondrop: (event: DragEvent) => {
-        const draggableElement = event.relatedTarget as HTMLElement;
-        const dropzoneElement = event.target as HTMLElement;
-
-        const square = this.boardState.getSquareFromEl(draggableElement);
-        this.setCoordsBasedOnDropZone(square, dropzoneElement);
       }
     })
 
-    document.getElementById('board').addEventListener('click', (event) => {
-      const target = event.target as HTMLElement;
-      if (!target?.classList.contains('draggable')) {
-        this.updateLastSquare(null);
-      }
-    })
+    document.addEventListener('click', this.clickHander);
+  }
+
+  private clickEventListener(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target?.classList.contains('draggable')) {
+      this.updateLastSquare(null);
+    }
   }
 
   claimSuccess() {
@@ -149,14 +145,23 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
       sq.letter = letter;
 
-      for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
-        const dropzoneEl = document.querySelector(`#startArea .dropzone[data-id='${GRID_SIZE*GRID_SIZE + i}']`) as HTMLElement;
+      const tryDropInDropzone = (i: number): boolean => {
+        const dropzoneEl = document.querySelector(`.dropzone[data-id='${i}']`) as HTMLElement;
         const dropzone = this.boardState.getDropzone(dropzoneEl);
         if (dropzone.active) {
           this.setCoordsBasedOnDropZone(sq, dropzoneEl);
           dropzone.active = false;
-          break;
+          return true;
         }
+        return false;
+      }
+
+      for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
+        if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
+      }
+
+      for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
+        if (tryDropInDropzone(i)) return;
       }
     })
   }

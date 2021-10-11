@@ -57,10 +57,14 @@ export class GameHostService {
   
             if (this.nextPeelWins) {
               if (message.data.boardValid) {
-                this.peerToPeerService.broadcastAndToSelf({
-                  command: 'WINNER',
-                  playerId: message.from
-                });
+                if (!this.state.winnerId) {
+                  this.state.winnerId = message.from;
+                  this.updateSharedState();
+                  this.peerToPeerService.broadcastAndToSelf({
+                    command: 'WINNER'
+                  });
+                }
+
               }
               else {
                 this.peerToPeerService.broadcastAndToSelf({
@@ -70,9 +74,10 @@ export class GameHostService {
   
                 this.addLetters(playerLetterSet);
               }
-              return;
             }
-            this.giveEveryPlayerNLetters(1);
+            else {
+              this.giveEveryPlayerNLetters(1);
+            }
             this.updateSharedState();
           } break;
         }
@@ -81,21 +86,20 @@ export class GameHostService {
   }
 
   async createGame() {
-    this.dispose();
     await this.peerToPeerService.setupAsHost();
   }
 
   async startGame() {
+    this.dispose();
     this.peerToPeerService.broadcastAndToSelf({
-      command: 'GAME_START',
-      totalTiles: this.state.letters.length
+      command: 'GAME_START'
     });
     const numPlayers = this.gameService.state.players.length;
     for (let player of this.gameService.state.players) {
       this.state.lettersPerPlayer[player.id] = new Multiset<Letter>();
     }
     const initTiles = this.getInitialTileNumbers(numPlayers);
-    this.state.totalTilesInGame = initTiles * numPlayers;
+    this.state.totalTilesInGame = this.state.letters.length;
     this.giveEveryPlayerNLetters(this.getInitialTileNumbers(numPlayers));
     this.updateSharedState();
   }
@@ -110,6 +114,12 @@ export class GameHostService {
       command: 'UPDATE_SHARED_STATE',
       state: this.getSharedState()
     })
+  }
+
+  returnToLobby() {
+    this.peerToPeerService.broadcastAndToSelf({
+      command: 'RETURN_TO_LOBBY'
+    });
   }
 
   private giveEveryPlayerNLetters(n: number) {
