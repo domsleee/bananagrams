@@ -1,0 +1,34 @@
+<body style="margin:auto; width: 100%">
+  <div id="board" style="margin: auto; position: relative">
+    <div class="dropzoneHelper">
+      <div *ngFor="let square of boardState.squares"
+        class="draggable"
+        [class.last-clicked]="square.lastClicked"
+        [attr.data-id]="square.id"
+        [style.transform]="'translate(' + square.x + 'px, ' + square.y + 'px'">{{square.letter}}</div>
+      
+      <div id="topArea">
+        <div class="dropzone"
+          *ngFor="let zoneIndex of topDropzones; let i = index"
+          [class.droppable]="boardState.dropzones[zoneIndex].active"
+          [attr.data-id]="i"
+        ></div>
+      </div>
+
+      <div id="startArea">
+        <div>
+          <button class="win" (click)="claimSuccess()" [disabled]="!readonlyGameServiceState.canClaimSuccess">win</button>
+          <button class="dump" (click)="dump()" [disabled]="!readonlyGameServiceState.canDump || !lastSquare">dump</button>
+          <div style="font-size:15px;">{{readonlyGameServiceState.tilesUsedByPlayers}} / {{readonlyGameServiceState.totalTilesInGame}} ({{readonlyGameServiceState.tilesRemaining}} remaining)</div>
+          <div style="font-size:15px;">{{playerModel.tilesUsed}} / {{playerModel.totalTiles}}</div>
+
+        </div>
+        <div class="dropzone"
+          *ngFor="let zoneIndex of bottomDropzones; let i = index"
+          [class.droppable]="boardState.dropzones[zoneIndex].active"
+          [attr.data-id]="zoneIndex"
+        ></div>
+      </div>
+    </div>
+  </div>
+</body>

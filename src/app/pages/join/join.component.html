@@ -1,0 +1,8 @@
+<p>joining...</p>
+<div *ngIf="error == null">
+  <div class="loader"></div>
+</div>
+<div *ngIf="error">
+  <p>Error: {{error}}</p>
+  <button (click)="tryConnect()">try again</button>
+</div>

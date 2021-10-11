@@ -1,0 +1,81 @@
+$tileSize: 35px;
+$boardSize: 24;
+$startAreaRows: 2;
+$areaPadding: 5px;
+
+.draggable {
+  background-color: rgb(239, 225, 202);
+  left: 0;
+  top: 0;
+  position: absolute;
+  z-index: 500;
+  box-sizing: border-box;
+}
+.draggable {
+  width: $tileSize;
+  height: $tileSize;
+  line-height: $tileSize;
+  border: 1px solid;
+  border-radius: 2px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  font-size: 24px;
+}
+
+.draggable.last-clicked {
+  background: orange;
+}
+
+#board {
+  width: $boardSize*($tileSize - 1) + 2*$areaPadding;
+  font-size: 0;
+}
+
+#topArea, #startArea {
+  padding: $areaPadding;
+}
+
+#topArea {
+  background-color: brown;
+}
+
+#startArea {
+  background-color: grey;
+  margin-top: 10px;
+}
+
+.dropzoneHelper {
+  font-size: 0;
+}
+
+.row {
+  height: $tileSize;
+}
+
+.row, .dropzone {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+}
+
+.pad-5 {
+  padding: 5px;
+}
+
+// dropzone styling
+.dropzone {
+  width: $tileSize - 1;
+  height: $tileSize - 1;
+}
+
+.drop-target {
+  background-color: #29e;
+  opacity: 0.8;
+}
+
+:export {
+  boardSize: $boardSize;
+  startAreaRows: $startAreaRows;
+}

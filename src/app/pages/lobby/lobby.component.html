@@ -1,0 +1,9 @@
+<p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
+<p *ngFor="let player of gameServiceState.players">
+  {{player.id}} | {{player.name}}
+</p>
+
+<input [(ngModel)]="name" type="text">
+<button (click)="setName()" [disabled]="!name">Set name</button>
+<br />
+<button *ngIf="isHost" (click)="startGame()">Start</button>

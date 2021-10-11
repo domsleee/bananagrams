@@ -1,0 +1,18 @@
+<div>
+  <button *ngFor="let player of gameServiceState.players"
+    (click)="selectPlayer(player)"
+    [class.active]="activePlayer?.id === player.id">{{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}</button>
+</div>
+
+
+<div *ngFor="let player of gameServiceState.players">
+  <app-board
+    *ngIf="player.id === activePlayer?.id"
+    [style.opacity]="5"
+    [playerModel]="player"
+    [readonly]="player.id !== myId"
+  ></app-board>
+</div>
+
+
+<!-- <app-board [playerModel]="playerModel"></app-board> -->
