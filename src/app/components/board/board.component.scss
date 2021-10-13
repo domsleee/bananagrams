@@ -1,5 +1,5 @@
 $tileSize: 25px;
-$boardSize: 20;
+$boardSize: 22;
 $startAreaRows: 2;
 $areaPadding: 5px;
 
@@ -29,6 +29,10 @@ $areaPadding: 5px;
 .square.last-clicked {
   background: orange;
   z-index: 50000;
+}
+
+.square.invalid {
+  background: red;
 }
 
 #board {

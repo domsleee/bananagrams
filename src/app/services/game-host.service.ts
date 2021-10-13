@@ -6,6 +6,7 @@ import { Multiset } from '../shared/multiset';
 import { IGenericMessage } from '../shared/peer-to-peer/defs';
 import { IRequestData } from '../shared/peer-to-peer/messages';
 import { GameService, ISharedState } from './game.service';
+import { InitialTilesProviderService } from './initial-tiles-provider.service';
 import { PeerToPeerService } from './peer-to-peer.service';
 
 export interface GameHostServiceState {
@@ -28,7 +29,8 @@ export class GameHostService {
 
   constructor(
     private peerToPeerService: PeerToPeerService,
-    private gameService: GameService
+    private gameService: GameService,
+    private initialTilesProviderService: InitialTilesProviderService
   ) {
     this.subs = [
       this.peerToPeerService.connectionAdded.subscribe(() => this.updateSharedState()),
@@ -67,6 +69,7 @@ export class GameHostService {
 
               }
               else {
+                this.state.losers.push(message.from);
                 this.peerToPeerService.broadcastAndToSelf({
                   command: 'LOSER',
                   playerId: message.from
@@ -98,9 +101,12 @@ export class GameHostService {
     for (let player of this.gameService.state.players) {
       this.state.lettersPerPlayer[player.id] = new Multiset<Letter>();
     }
-    const initTiles = this.getInitialTileNumbers(numPlayers);
+
+    this.state.letters = this.initialTilesProviderService.getInitialTiles();
+    GameHostService.shuffleArray(this.state.letters);
+    const initTiles = this.initialTilesProviderService.getNumTilesPerPlayer(numPlayers);
     this.state.totalTilesInGame = this.state.letters.length;
-    this.giveEveryPlayerNLetters(this.getInitialTileNumbers(numPlayers));
+    this.giveEveryPlayerNLetters(initTiles);
     this.updateSharedState();
   }
 
@@ -145,13 +151,6 @@ export class GameHostService {
 
   private get canDump() {
     return this.state.letters.length >= 3;
-  }
-
-  private getInitialTileNumbers(numPlayers: number) {
-    if (1 <= numPlayers && numPlayers <= 4) return 21;
-    if (5 <= numPlayers && numPlayers <= 6) return 15;
-    if (7 <= numPlayers && numPlayers <= 8) return 11;
-    throw new Error(`unknown for #players ${numPlayers}`);
   }
 
   private addLetters(letters: Iterable<Letter>) {
@@ -210,6 +209,7 @@ export class GameHostService {
       tilesRemaining: this.state.letters.length,
       totalPeerCount: 1 + this.peerToPeerService.getConnections().length,
       inGame: this.state.inGame,
+      gameOver: this.state.winnerId != null || this.state.losers.length === Object.keys(this.state.lettersPerPlayer).length
     }
   }
 }

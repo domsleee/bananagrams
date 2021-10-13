@@ -9,8 +9,10 @@ export class SquareModel {
   dropzoneRef?: DropzoneModel = null;
   dropIndex: number = -1;
   lastClicked: boolean = false;
+  invalid: boolean;
 
   constructor(id: number) {
     this.id = id;
+    this.invalid = false;
   }
 }

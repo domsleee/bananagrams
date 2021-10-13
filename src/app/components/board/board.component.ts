@@ -5,6 +5,9 @@ import { GRID_SIZE, Letter, START_AREA_ROWS, TILE_SIZE } from 'src/app/shared/de
 import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
+import { getLogger } from 'src/app/services/logger';
+
+const logger = getLogger('board');
 
 @Component({
   selector: 'app-board',
@@ -25,7 +28,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   lastSquare?: SquareModel;
 
   private readonly clickHander;
-  private squareIdCounter = 500;
+  private static squareIdCounter = 500;
 
   constructor(private gameService: GameService) {
     this.readonlyGameServiceState = gameService.state;
@@ -63,9 +66,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
 
           const boardEl = document.getElementById('board');
           const boardRec = boardEl.getBoundingClientRect();
-          const calcX = event.pageX - boardRec.left - (TILE_SIZE/2);
-          const calcY = event.pageY - boardRec.top - (TILE_SIZE/2);
-
+          const calcX = event.clientX - boardRec.left - (TILE_SIZE/2);
+          const calcY = event.clientY - boardRec.top - (TILE_SIZE/2);
           //console.log(event.target.style);
           //console.log('square,event', square.x, calcX, event.target.style.width, 'a', event);
 
@@ -85,10 +87,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       const square = this.boardState.getSquareFromEl(squareEl);
       square.dropzoneRef.setActive(false);
       square.dropIndex = square.dropzoneRef.id;
-      this.gameService.updateAfterDrop();
-
       const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropzoneRef.id}']`) as HTMLElement;
       this.setCoordsBasedOnDropZone(square, dropzoneEl);
+      this.gameService.updateAfterDrop();
     });
 
     interact('.dropzone.droppable').dropzone({
@@ -142,7 +143,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
 
   private addSquare(letter: Letter): void {
     window.requestAnimationFrame(() => {
-      const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
+      const count = this.boardState.squares.length;
+      const sq = this.boardState.getSquareFromId(BoardComponent.squareIdCounter++);
+      if (this.boardState.squares.length === count) {
+        logger.warn(`could not add new square... apparently ${sq.id} already exists.`);
+      }
       sq.letter = letter;
 
       const tryDropInDropzone = (i: number): boolean => {
@@ -163,6 +168,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
         if (tryDropInDropzone(i)) return;
       }
+
+      this.gameService.updateAfterDrop();
     })
   }
 
@@ -172,8 +179,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
     const boardRec = boardEl.getBoundingClientRect();
     this.setElementCoords(
       square,
-      dropzoneRec.left-boardRec.left,
-      dropzoneRec.top-boardRec.top);
+      dropzoneRec.left-boardRec.left-window.scrollX,
+      dropzoneRec.top-boardRec.top-window.scrollY);
     square.dropzoneRef = this.boardState.getDropzone(dropzoneEl);
   }
 

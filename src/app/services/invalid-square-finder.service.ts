@@ -2,18 +2,20 @@ import { invalid } from '@angular/compiler/src/render3/view/util';
 import { Injectable } from '@angular/core';
 import { SquareModel } from '../models/square-model';
 import { GRID_SIZE } from '../shared/defs';
+import { DictionaryService } from './dictionary.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InvalidSquareFinderService {
 
-  constructor() { }
+  constructor(
+    private dictionaryService: DictionaryService
+  ) { }
 
   getInvalidSquares(squares: Readonly<Array<SquareModel>>): Array<Readonly<SquareModel>> {
     const g: Array<Array<Readonly<SquareModel>>> = [];
     for (let i = 0; i < GRID_SIZE; ++i) g.push(Array(GRID_SIZE).fill(null));
-
     for (const sq of squares) {
       const r = Math.floor(sq.dropIndex / GRID_SIZE);
       const c = sq.dropIndex % GRID_SIZE;
@@ -48,7 +50,9 @@ export class InvalidSquareFinderService {
   }
 
   private isInvalidWord(word: Array<Readonly<SquareModel>>) {
-    return false;
+    if (word.length === 1) return false;
+    const wordString = word.map(t => t.letter);
+    return !this.dictionaryService.hasWord(wordString.join(''));
   }
 }
 
@@ -68,5 +72,6 @@ class Accumulator {
     if (this.currentArr.length) {
       this.squares.push(this.currentArr);
     }
+    this.currentArr = [];
   }
 }

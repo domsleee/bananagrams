@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
+import { SquareModel } from 'src/app/models/square-model';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService, GameServiceState } from 'src/app/services/game.service';
+import { InvalidSquareFinderService } from 'src/app/services/invalid-square-finder.service';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
 
 @Component({
@@ -13,6 +15,7 @@ import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
 export class BoardContainerComponent implements OnInit {
   gameServiceState: Readonly<GameServiceState>;
   activePlayer: PlayerModel;
+  winner?: PlayerModel;
   myId: string;
   hostId: string;
   subs: Subscription[];
@@ -20,7 +23,8 @@ export class BoardContainerComponent implements OnInit {
   constructor(
     private gameService: GameService,
     private peerToPeerService: PeerToPeerService,
-    private gameHostService: GameHostService
+    private gameHostService: GameHostService,
+    private invalidSquareService: InvalidSquareFinderService
   ) { }
 
   ngOnInit(): void {
@@ -32,6 +36,13 @@ export class BoardContainerComponent implements OnInit {
       this.gameService.winner$.subscribe(() => {
         const winnerId = this.gameServiceState.winnerId;
         this.activePlayer = this.gameService.getPlayerById(winnerId);
+        this.winner = this.activePlayer;
+      }),
+      this.gameService.loser$.subscribe(() => {
+        let mySquares = this.gameService.getMyPlayer().boardState.squares;
+        this.gameService.getMyPlayer().isEliminated = true;
+        const invalidSquares = this.invalidSquareService.getInvalidSquares(mySquares);
+        invalidSquares.forEach(sq => { (sq as SquareModel).invalid = true });
       })
     ]
   }

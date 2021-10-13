@@ -11,6 +11,8 @@ import { LocalComponent } from './pages/local/local.component';
 import { FormsModule } from '@angular/forms';
 import { JoinComponent } from './pages/join/join.component';
 import { BoardContainerComponent } from './components/board-container/board-container.component';
+import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -26,9 +28,16 @@ import { BoardContainerComponent } from './components/board-container/board-cont
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: APP_BASE_HREF,
+      useFactory: (s: PlatformLocation) => s.getBaseHrefFromDOM(),
+      deps: [PlatformLocation]
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

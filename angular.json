@@ -37,6 +37,7 @@
           },
           "configurations": {
             "production": {
+              "baseHref": "/bananagrams/",
               "budgets": [
                 {
                   "type": "initial",
@@ -58,6 +59,7 @@
               "outputHashing": "all"
             },
             "development": {
+              "baseHref": "/bananagrams/",
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -112,6 +114,10 @@
               "src/**/*.html"
             ]
           }
+        },
+        "deploy": {
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {}
         }
       }
     }

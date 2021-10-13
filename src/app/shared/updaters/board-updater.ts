@@ -6,9 +6,13 @@ export class BoardUpdater {
   updateBoard(boardState: BoardState, newBoardState: Partial<BoardState>) {
     const inv = this.getInvSquares(boardState);
     const newInv = this.getInvSquares(newBoardState);
+    const idsToRemove = [];
 
     for (let sq of boardState.squares) {
-      if (!(sq.id in newInv)) continue;
+      if (!(sq.id in newInv)) {
+        idsToRemove.push(sq.id);
+        continue;
+      };
       const newSq = newInv[sq.id];
 
       const helper = new ModelUpdaterHelper<SquareModel>(sq);
@@ -17,6 +21,7 @@ export class BoardUpdater {
       helper.updateByAssignment(newSq, 'letter');
       helper.updateByAssignment(newSq, 'x');
       helper.updateByAssignment(newSq, 'y');
+      helper.updateByAssignment(newSq, 'invalid');
     }
 
     for (let sq of newBoardState.squares) {
@@ -24,6 +29,8 @@ export class BoardUpdater {
         boardState.squares.push(sq); // this cannot conflict, since it is read-only
       }
     }
+
+    boardState.squares = boardState.squares.filter(t => !idsToRemove.includes(t.id));
   }
 
   private getInvSquares(state: Partial<BoardState>): {[key: string]: Partial<SquareModel>} {

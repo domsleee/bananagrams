@@ -32,6 +32,7 @@ export interface ISharedState {
   totalPeerCount: number;
   inGame: boolean;
   nextPeelWins: boolean;
+  gameOver: boolean;
 }
 
 @Injectable({
@@ -41,6 +42,7 @@ export class GameService {
   letter$ = new SubscribableQueue<Letter>();
   gameStart$ = new Subject<boolean>();
   winner$ = new Subject<void>();
+  loser$ = new Subject<void>();
   subs: Array<Subscription> = [];
   state: GameServiceState = GameService.getInitialState();
 
@@ -90,6 +92,9 @@ export class GameService {
           case 'LOSER': {
             let player = this.getPlayerById(message.data.playerId);
             player.isEliminated = true;
+            if (message.data.playerId === this.peerToPeerService.getId()) {
+              this.loser$.next();
+            }
           } break;
           case 'WINNER': {
             this.winner$.next();
@@ -132,8 +137,32 @@ export class GameService {
   updateAfterDrop() {
     let player = this.getMyPlayer();
     player.tilesUsed = player.boardState.squares.reduce((a, sq) => a + (sq.dropzoneRef?.id < GRID_SIZE * GRID_SIZE ? 1 : 0), 0);
-    this.state.canClaimSuccess = player.tilesUsed === player.totalTiles;
+    this.state.canClaimSuccess = this.canClaimSuccess();
     this.sendUpdateMessage(this.getMyPlayer());
+  }
+
+  private canClaimSuccess() {
+    const player = this.getMyPlayer();
+    const allTilesUsed = player.tilesUsed === player.totalTiles;
+    if (!allTilesUsed) return false;
+
+    let edges = 0;
+    const sqIds = player.boardState.squares.filter(t => t.dropIndex !== -1).map(t => t.dropIndex);
+    for (let i = 0; i < sqIds.length; ++i) {
+      for (let j = i+1; j < sqIds.length; ++j) {
+        const id1 = sqIds[i];
+        const id2 = sqIds[j];
+        let c1 = id1 % GRID_SIZE;
+        let c2 = id2 % GRID_SIZE;
+        const verticalEdge = id1 + GRID_SIZE === id2 || id1 - GRID_SIZE === id2;
+        const horizontalEdge = (id1 + 1 === id2 && c1 + 1 == c2) || (id1 - 1 == id2 && c1 - 1 == c2);
+        if (verticalEdge || horizontalEdge) {
+          edges++;
+        }
+      }
+    }
+
+    return edges === player.totalTiles-1;
   }
 
   echoAllPlayers() {
@@ -186,7 +215,8 @@ export class GameService {
       players: [],
       totalPeerCount: 1,
       inGame: false,
-      nextPeelWins: false
+      nextPeelWins: false,
+      gameOver: false
     }
   }
 

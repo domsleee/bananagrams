@@ -5,6 +5,7 @@
         class="square"
         [class.draggable]="!readonly"
         [class.last-clicked]="square.lastClicked"
+        [class.invalid]="square.invalid"
         [attr.data-id]="square.id"
         [style.transform]="'translate(' + square.x + 'px, ' + square.y + 'px'">{{square.letter}}</div>
       
@@ -19,8 +20,12 @@
       <div id="startArea">
         <div>
           <div style="font-size:15px;">tiles remaining: {{readonlyGameServiceState.tilesRemaining}}</div>
-          <button class="win" (click)="claimSuccess()" [disabled]="!readonlyGameServiceState.canClaimSuccess">{{readonlyGameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
-          <button class="dump" (click)="dump()" [disabled]="!readonlyGameServiceState.canDump || !lastSquare">dump</button>
+          <button class="win"
+            (click)="claimSuccess()"
+            [disabled]="!readonlyGameServiceState.canClaimSuccess || readonly">{{readonlyGameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
+          <button class="dump"
+            (click)="dump()"
+            [disabled]="!readonlyGameServiceState.canDump || !lastSquare">dump</button>
           <!-- <div style="font-size:15px;">{{readonlyGameServiceState.tilesUsedByPlayers}} / {{readonlyGameServiceState.totalTilesInGame}} ({{readonlyGameServiceState.tilesRemaining}} remaining)</div> -->
         </div>
         <div class="dropzone"
