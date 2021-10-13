@@ -150,25 +150,27 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       }
       sq.letter = letter;
 
-      const tryDropInDropzone = (i: number): boolean => {
-        const dropzoneEl = document.querySelector(`.dropzone[data-id='${i}']`) as HTMLElement;
-        const dropzone = this.boardState.getDropzone(dropzoneEl);
-        if (dropzone.active) {
-          this.setCoordsBasedOnDropZone(sq, dropzoneEl);
-          dropzone.active = false;
-          return true;
+      const dropInDropzone = () => {
+        const tryDropInDropzone = (i: number): boolean => {
+          const dropzoneEl = document.querySelector(`.dropzone[data-id='${i}']`) as HTMLElement;
+          const dropzone = this.boardState.getDropzone(dropzoneEl);
+          if (dropzone.active) {
+            this.setCoordsBasedOnDropZone(sq, dropzoneEl);
+            dropzone.active = false;
+            return true;
+          }
+          return false;
         }
-        return false;
+  
+        for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
+          if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
+        }
+  
+        for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
+          if (tryDropInDropzone(i)) return;
+        }
       }
-
-      for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
-        if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
-      }
-
-      for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
-        if (tryDropInDropzone(i)) return;
-      }
-
+      dropInDropzone();
       this.gameService.updateAfterDrop();
     })
   }
