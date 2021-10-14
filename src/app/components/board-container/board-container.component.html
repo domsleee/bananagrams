@@ -8,7 +8,9 @@
         <p *ngIf="player.isEliminated">:(</p>
       </button>
     <p *ngIf="gameServiceState.winnerId">{{winner.name}} wins!</p>
-    <button *ngIf="gameServiceState.gameOver" (click)="returnToLobby()">Return to lobby</button>
+    <button
+      *ngIf="isHost && gameServiceState.gameOver"
+      (click)="returnToLobby()">Return to lobby</button>
   </div>
 
   <div *ngFor="let player of gameServiceState.players">

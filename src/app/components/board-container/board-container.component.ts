@@ -19,6 +19,7 @@ export class BoardContainerComponent implements OnInit {
   myId: string;
   hostId: string;
   subs: Subscription[];
+  isHost = false;
 
   constructor(
     private gameService: GameService,
@@ -28,6 +29,7 @@ export class BoardContainerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.isHost = this.peerToPeerService.getIsHost();
     this.activePlayer = this.gameService.getOrCreateMyPlayer();
     this.myId = this.gameService.getOrCreateMyPlayer().id;
     this.hostId = this.peerToPeerService.getHostId();
