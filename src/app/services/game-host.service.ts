@@ -130,6 +130,7 @@ export class GameHostService {
 
   private giveEveryPlayerNLetters(n: number) {
     for (const player of this.gameService.state.players) {
+      if (player.isEliminated) continue;
       const letters = this.takeLetters(n);
       this.sendPlayerLetters(player.id, letters);
     } 
@@ -146,7 +147,7 @@ export class GameHostService {
   }
 
   private get nextPeelWins() {
-    return this.state.letters.length < this.gameService.state.players.length;
+    return this.state.letters.length < this.gameService.state.players.length - this.state.losers.length;
   }
 
   private get canDump() {
@@ -154,7 +155,7 @@ export class GameHostService {
   }
 
   private addLetters(letters: Iterable<Letter>) {
-    this.state.letters.concat([...letters]);
+    this.state.letters = this.state.letters.concat([...letters]);
     GameHostService.shuffleArray(this.state.letters);
   }
 

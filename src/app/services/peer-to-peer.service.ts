@@ -198,7 +198,7 @@ export class PeerToPeerService {
   }
 
   protected messageHandler(message: IMessage) {
-    logger.info('messageHandler', message);
+    logger.info('incomingMessage', message);
     if (this.isHost && message.type === 'BROADCAST') {
       this.broadcast(message.data, {from: message.from, echo: message.echoBroadcast});
     }

@@ -1,6 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { APP_BASE_HREF } from '@angular/common';
+import { getLogger } from './logger';
+
+const logger = getLogger('dictionary');
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +15,6 @@ export class DictionaryService {
     private httpClient: HttpClient,
     @Inject(APP_BASE_HREF) private baseHref: string
   ) {
-    console.log('dictionary init');
     this.init();
   }
 
@@ -26,7 +28,7 @@ export class DictionaryService {
 
   hasWord(word: string): boolean {
     word = word.toUpperCase();
-    console.log(word, this.dict.has(word));
+    logger.info(`hasWord(${word}) = ${this.dict.has(word)}`);
     return this.dict.has(word);
   }
 }

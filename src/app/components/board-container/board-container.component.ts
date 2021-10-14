@@ -28,8 +28,8 @@ export class BoardContainerComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.activePlayer = this.gameService.getMyPlayer();
-    this.myId = this.gameService.getMyPlayer().id;
+    this.activePlayer = this.gameService.getOrCreateMyPlayer();
+    this.myId = this.gameService.getOrCreateMyPlayer().id;
     this.hostId = this.peerToPeerService.getHostId();
     this.gameServiceState = this.gameService.state;
     this.subs = [
@@ -39,10 +39,11 @@ export class BoardContainerComponent implements OnInit {
         this.winner = this.activePlayer;
       }),
       this.gameService.loser$.subscribe(() => {
-        let mySquares = this.gameService.getMyPlayer().boardState.squares;
-        this.gameService.getMyPlayer().isEliminated = true;
+        let mySquares = this.gameService.getOrCreateMyPlayer().boardState.squares;
+        this.gameService.getOrCreateMyPlayer().isEliminated = true;
         const invalidSquares = this.invalidSquareService.getInvalidSquares(mySquares);
         invalidSquares.forEach(sq => { (sq as SquareModel).invalid = true });
+        this.gameService.updateAfterDrop();
       })
     ]
   }

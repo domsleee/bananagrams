@@ -4,6 +4,7 @@ import { DictionaryService } from 'src/app/services/dictionary.service';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService } from 'src/app/services/game.service';
 import { InitialTilesProviderService } from 'src/app/services/initial-tiles-provider.service';
+import { ParamOverrideService } from 'src/app/services/param-override.service';
 
 @Component({
   selector: 'app-local',
@@ -15,24 +16,13 @@ export class LocalComponent implements OnInit {
     private gameService: GameService,
     private gameHostService: GameHostService,
     private activatedRoute: ActivatedRoute,
-    private initialTilesProviderService: InitialTilesProviderService
+    private paramOverrideService: ParamOverrideService
   ) { }
 
   ngOnInit(): void {
-    this.setupOverrides();
+    this.paramOverrideService.setupOverrides(this.activatedRoute.snapshot.queryParams);
     this.gameService.initFromPeerToPeer();
     this.gameService.updatePlayer('abc');
     this.gameHostService.startGame();
   }
-
-  private setupOverrides() {
-    const params = this.activatedRoute.snapshot.queryParams;
-    if (params?.tiles) {
-      this.initialTilesProviderService.initialTilesOverride = params?.tiles.split('');
-    }
-    if (params?.numTiles) {
-      this.initialTilesProviderService.numTilesPerPlayerOverride = params.numTiles;
-    }
-  }
-
 }

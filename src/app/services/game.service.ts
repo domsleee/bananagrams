@@ -21,6 +21,7 @@ const MAX_PLAYERS = 8;
 export interface GameServiceState extends ISharedState {
   canClaimSuccess: boolean;
   players: Array<PlayerModel>;
+  myPlayer?: PlayerModel;
 };
 
 export interface ISharedState {
@@ -126,23 +127,20 @@ export class GameService {
   }
 
   updatePlayer(name: string) {
-    let player = this.getMyPlayer();
-    if (!player) {
-      player = new PlayerModel(this.peerToPeerService.getId());
-    }
+    let player = this.getOrCreateMyPlayer();
     player.name = name;
     this.sendUpdateMessage(player);
   }
 
   updateAfterDrop() {
-    let player = this.getMyPlayer();
+    let player = this.getOrCreateMyPlayer();
     player.tilesUsed = player.boardState.squares.reduce((a, sq) => a + (sq.dropzoneRef?.id < GRID_SIZE * GRID_SIZE ? 1 : 0), 0);
     this.state.canClaimSuccess = this.canClaimSuccess();
-    this.sendUpdateMessage(this.getMyPlayer());
+    this.sendUpdateMessage(this.getOrCreateMyPlayer());
   }
 
   private canClaimSuccess() {
-    const player = this.getMyPlayer();
+    const player = this.getOrCreateMyPlayer();
     const allTilesUsed = player.tilesUsed === player.totalTiles;
     if (!allTilesUsed) return false;
 
@@ -200,8 +198,12 @@ export class GameService {
     });
   }
 
-  getMyPlayer(): PlayerModel {
-    return this.getPlayerById(this.peerToPeerService.getId());
+  getOrCreateMyPlayer(): PlayerModel {
+    let player = this.getPlayerById(this.peerToPeerService.getId());
+    if (!player) {
+      player = new PlayerModel(this.peerToPeerService.getId());
+    }
+    return this.state.myPlayer = player;
   }
 
   private static getInitialState(): GameServiceState {
