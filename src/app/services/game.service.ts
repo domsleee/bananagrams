@@ -21,7 +21,7 @@ const MAX_PLAYERS = 8;
 export interface GameServiceState extends ISharedState {
   canClaimSuccess: boolean;
   players: Array<PlayerModel>;
-  myPlayer?: PlayerModel;
+  myPlayer: PlayerModel | null;
 };
 
 export interface ISharedState {
@@ -218,7 +218,8 @@ export class GameService {
       totalPeerCount: 1,
       inGame: false,
       nextPeelWins: false,
-      gameOver: false
+      gameOver: false,
+      myPlayer: null
     }
   }
 

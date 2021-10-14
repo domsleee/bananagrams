@@ -1,7 +1,7 @@
 <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
 <ul>
   <li *ngFor="let player of gameServiceState.players">
-    {{player.name}}{{player.id == gameServiceState.myPlayer?.id ? '(you)' : ''}}
+    {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
   </li>
 </ul>
 
@@ -10,5 +10,5 @@
 <br /><br />
 <button
   *ngIf="isHost"
-  [disabled]="gameServiceState.myPlayer == null"
+  [disabled]="gameServiceState.myPlayer === null"
   (click)="startGame()">Start Game</button>
