@@ -15,15 +15,24 @@ export class DictionaryService {
     private httpClient: HttpClient,
     @Inject(APP_BASE_HREF) private baseHref: string
   ) {
+    window['fixDictionary'] = () => this.init();
+    window['checkWord'] = (word: string) => this.hasWord(word);
     this.init();
   }
 
   async init() {
     return this.httpClient.get(this.baseHref + 'assets/csw2019.txt', {responseType: 'text'})
       .subscribe(t => {
-        const spl = t.split('\r\n');
-        for (let i = 2; i < spl.length; ++i) this.dict.add(spl[i]);
+        this.addAllWords(t.split('\r\n'));
+        this.addAllWords(t.split('\n'));
       });
+  }
+
+  private addAllWords(arr: string[]) {
+    for (let word of arr) {
+      this.dict.add(word);
+    }
+
   }
 
   hasWord(word: string): boolean {
