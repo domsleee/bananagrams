@@ -11,11 +11,12 @@ export class InitialTilesProviderService {
   constructor() { }
 
   // taken from https://bananagrams.com/blogs/news/how-to-play-bananagrams-instructions-for-getting-started
-  getInitialTiles(): Letter[] {
+  getInitialTiles(numPlayers: number = 0): Letter[] {
     if (this.initialTilesOverride) return this.initialTilesOverride;
     let result = new Array<Letter>();
+    const mult = 1 + Math.floor((numPlayers-1)/8);
     for (let [key, value] of letterMap.entries()) {
-      for (let i = 0; i < value; ++i) result.push(key);
+      for (let i = 0; i < value*mult; ++i) result.push(key);
     }
     return result;
   }
@@ -25,6 +26,7 @@ export class InitialTilesProviderService {
     if (1 <= numPlayers && numPlayers <= 4) return 21;
     if (5 <= numPlayers && numPlayers <= 6) return 15;
     if (7 <= numPlayers && numPlayers <= 8) return 11;
+    return 11;
     throw new Error(`unknown for #players ${numPlayers}`);
   }
 }

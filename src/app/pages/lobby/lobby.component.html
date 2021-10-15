@@ -1,13 +1,25 @@
 <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
 <ul>
-  <li *ngFor="let player of gameServiceState.players">
+  <li *ngFor="let player of gameServiceState.players" [class.strikethrough]="player.disconnected">
     {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
   </li>
 </ul>
 
 <input [(ngModel)]="name" type="text">
-<button (click)="setName()" [disabled]="!name">Set name</button>
-<br /><br />
+<button
+  (click)="setName()"
+  [disabled]="!name || gameServiceState.totalPeerCount === 0 || rejoining"
+  >Set name</button>
+<button
+  *ngIf="!isHost && gameServiceState.rejoinCandidate"
+  (click)="rejoin()"
+  [disabled] = "rejoining"
+>rejoin as {{gameServiceState.rejoinCandidate.name}}?</button>
+<button
+  *ngIf="!isHost"
+  (click)="joinAsSpectator()"
+  [disabled] = "rejoining || !gameServiceState.inGame"
+>join as spectator</button>
 <button
   *ngIf="isHost"
   [disabled]="gameServiceState.myPlayer === null"

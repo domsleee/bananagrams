@@ -36,6 +36,13 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
+    let lastSquares = this.boardState.squares.filter(t => t.lastClicked);
+    if (lastSquares.length) {
+      this.lastSquare = lastSquares[0];
+    }
+    for (let i = 1; i < lastSquares.length; ++i) {
+      lastSquares[i].lastClicked = false;
+    }
   }
 
   ngOnDestroy() {
@@ -79,14 +86,13 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       const squareEl = event.target as HTMLElement;
       const square = this.boardState.getSquareFromEl(squareEl);
       this.updateLastSquare(square);
-      square.dropzoneRef.active = true;
+      this.setDropzoneActive(square.dropIndex, true);
       square.dropIndex = -1;
     })
     .on('up', (event) => {
       const squareEl = event.target as HTMLElement;
       const square = this.boardState.getSquareFromEl(squareEl);
-      square.dropIndex = square.dropzoneRef.id;
-      const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropzoneRef.id}']`) as HTMLElement;
+      const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropIndex}']`) as HTMLElement;
       this.setCoordsBasedOnDropZone(square, dropzoneEl);
       this.gameService.updateAfterDrop();
     });
@@ -98,7 +104,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       ondragenter: (event) => {
         const squareEl = event.relatedTarget as HTMLElement;
         const square = this.boardState.getSquareFromEl(squareEl);
-        square.dropzoneRef = this.boardState.getDropzone(event.target);
+        const dropzoneRef = this.boardState.getDropzone(event.target);
+        square.dropIndex = dropzoneRef ? dropzoneRef.id : -1;
         event.target.classList.add('drop-target');
       },
       ondragleave: function (event) {
@@ -112,6 +119,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
     })
 
     document.addEventListener('click', this.clickHander);
+  }
+
+  private setDropzoneActive(id: number, active: boolean) {
+    const dropzone = this.boardState.getDropzoneFromId(id);
+    if (dropzone) dropzone.active = active;
   }
 
   private clickEventListener(event: Event) {
@@ -128,8 +140,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   dump() {
     if (!this.lastSquare) return;
     const sq = this.lastSquare;
-    if (sq.dropzoneRef) {
-      sq.dropzoneRef.active = true;
+    if (sq.dropIndex !== -1) {
+      this.setDropzoneActive(sq.dropIndex, true);
     }
     this.gameService.dump(sq);
     this.updateLastSquare(null);
@@ -184,9 +196,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       dropzoneRec.left-boardRec.left-window.scrollX,
       dropzoneRec.top-boardRec.top-window.scrollY);
 
-    square.dropzoneRef.active = true;
-    square.dropzoneRef = this.boardState.getDropzone(dropzoneEl);
-    square.dropzoneRef.active = false;
+    if (square.dropIndex != -1) this.setDropzoneActive(square.dropIndex, true);
+    square.dropIndex = this.boardState.getDropzone(dropzoneEl).id;
+    this.setDropzoneActive(square.dropIndex, false);
   }
 
   private setElementCoords(square: SquareModel, x: number, y: number) {

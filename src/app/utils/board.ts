@@ -3,11 +3,29 @@ import { SquareModel } from "../models/square-model";
 import { GRID_SIZE, START_AREA_ROWS } from "../shared/defs";
 
 export class BoardState {
-  dropzones: DropzoneModel[] = Array(GRID_SIZE*(GRID_SIZE+START_AREA_ROWS)).fill(null).map((t, i) => new DropzoneModel(i));
+  _dropzones: DropzoneModel[] = null;
   squares: SquareModel[] = [];
+
+  get dropzones() {
+    if (!this._dropzones) {
+      this._dropzones = Array(GRID_SIZE*(GRID_SIZE+START_AREA_ROWS))
+        .fill(null)
+        .map((t, i) => new DropzoneModel(i));
+    }
+    return this._dropzones;
+  }
+
+  set dropzones(value: any) {
+    this._dropzones = value;
+  }
 
   getDropzone(el: HTMLElement): DropzoneModel {
     const id = parseInt(el.getAttribute('data-id'));
+    return this.getDropzoneFromId(id);
+  }
+
+  getDropzoneFromId(id: number): DropzoneModel {
+    if (id === -1) return null;
     return this.dropzones[id];
   }
 

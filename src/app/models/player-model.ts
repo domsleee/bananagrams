@@ -8,6 +8,8 @@ export class PlayerModel {
   totalTiles: number = 0;
   boardState: BoardState = new BoardState();
   isEliminated = false;
+  isSpectator = false;
+  disconnected = false;
 
   constructor(id: string) {
     this.id = id;

@@ -2,6 +2,7 @@
   <div>
     <button *ngFor="let player of gameServiceState.players"
       (click)="selectPlayer(player)"
+      [class.disconnected]="player.disconnected"
       [class.active]="activePlayer?.id === player.id">
         {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}<br />
         <p *ngIf="!player.isEliminated">{{player.tilesUsed}} / {{player.totalTiles}}</p>

@@ -16,6 +16,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   name: string;
   isHost: boolean;
   subs: Subscription[];
+  rejoining = false;
 
   constructor(
     private gameService: GameService,
@@ -25,15 +26,18 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
+    console.log('ngOnInit');
     this.isHost = this.peerToPeerService.getIsHost();
     this.gameServiceState = this.gameService.state;
     this.gameService.initFromPeerToPeer();
+    
     this.subs = [
-      this.gameService.gameStart$.subscribe(t => this.router.navigate([RouteNames.GAME + '/' + this.peerToPeerService.getHostId()])),
-      this.peerToPeerService.connectionAdded.subscribe(t => {
-        if (this.isHost) this.gameService.echoAllPlayers();
-      })
-    ]
+      this.gameService.gameStart$.subscribe(t => this.gotoGame()),
+    ];
+  }
+
+  private gotoGame() {
+    this.router.navigate([RouteNames.GAME + '/' + this.peerToPeerService.getHostId()]);
   }
 
   ngOnDestroy() {
@@ -46,5 +50,17 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   startGame() {
     this.gameHostService.startGame();
+  }
+
+  rejoin() {
+    this.rejoining = true;
+    this.gameService.rejoinAsPlayer(this.gameServiceState.rejoinCandidate);
+    setTimeout(() => this.rejoining = false, 500);
+    if (this.gameServiceState.inGame) this.gotoGame();
+  }
+
+  joinAsSpectator() {
+    this.gameService.getOrCreateMyPlayer().isSpectator = true;
+    this.gotoGame();
   }
 }

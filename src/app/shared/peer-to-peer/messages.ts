@@ -3,8 +3,9 @@ import { ISharedState } from "src/app/services/game.service";
 import { Letter } from "../defs";
 
 
-export type IRequestData = IClaimSuccess | IDumpLetter | IUpdatePlayer;
-export type IResponseData = IReceiveLetters | IWinner | IGameStart | IUpdatePlayer | ILoser | IUpdateSharedState | IReturnToLobby;
+export type ISharedData = IUpdatePlayer | IRejoinPlayer;
+export type IRequestData = ISharedData | IClaimSuccess | IDumpLetter | IRequestState;
+export type IResponseData = ISharedData | IReceiveLetters | IWinner | IGameStart | IUpdatePlayer | ILoser | IUpdateSharedState | IReturnToLobby | IPlayerDisconnected | IRejoinSuccess | IRejoinPlayer;
 
 // SHARED
 // ==================
@@ -15,6 +16,10 @@ interface IUpdatePlayer {
   playerId: string;
 };
 
+interface IRejoinPlayer {
+  command: 'REJOIN_AS_PLAYER';
+  toPlayer: string;
+};
 
 // REQUESTS from client
 // ==================
@@ -30,6 +35,10 @@ interface IDumpLetter {
   letter: Letter;
 };
 
+interface IRequestState {
+  command: 'REQUEST_ALL_STATE';
+};
+
 // RESPONSES from host
 // ==================
 interface IReceiveLetters {
@@ -37,6 +46,15 @@ interface IReceiveLetters {
   playerId: string;
   letters: Letter[];
   playerTotalTiles: number;
+};
+
+interface IPlayerDisconnected {
+  command: 'PLAYER_DISCONNECTED';
+  playerId: string
+};
+
+interface IRejoinSuccess {
+  command: 'REJOIN_SUCCESS';
 };
 
 interface IWinner {

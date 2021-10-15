@@ -4,17 +4,18 @@ import { Subject } from 'rxjs';
 import { PeerToPeerService } from './peer-to-peer.service';
 import { PlayerModel } from '../models/player-model';
 import { GRID_SIZE, Letter } from '../shared/defs';
-import { IGenericMessage } from '../shared/peer-to-peer/defs';
+import { IGenericMessage, MessageData } from '../shared/peer-to-peer/defs';
 import { IRequestData, IResponseData } from '../shared/peer-to-peer/messages';
 import { SquareModel } from '../models/square-model';
 import { InvalidSquareFinderService } from './invalid-square-finder.service';
 import { SubscribableQueue } from '../shared/subscribable-queue';
-import { PlayerModelUpdater } from '../shared/updaters/player-model-updater';
+import { playerKeysToUpdate, PlayerModelUpdater } from '../shared/updaters/player-model-updater';
 import { getLogger } from 'loglevel';
 import { Router } from '@angular/router';
 import { RouteNames } from '../pages/routes';
 import { BoardState } from '../utils/board';
 import { BoardAlgorithmsService } from './board-algorithms.service';
+import { LocalStorageService } from './local-storage.service';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -23,6 +24,7 @@ export interface GameServiceState extends ISharedState {
   canClaimSuccess: boolean;
   players: Array<PlayerModel>;
   myPlayer: PlayerModel | null;
+  rejoinCandidate: PlayerModel | null;
 };
 
 export interface ISharedState {
@@ -52,36 +54,68 @@ export class GameService {
     private peerToPeerService: PeerToPeerService,
     private invalidSquareFinderService: InvalidSquareFinderService,
     private router: Router,
-    private boardAlgorithmsService: BoardAlgorithmsService
+    private boardAlgorithmsService: BoardAlgorithmsService,
+    private localStorageService: LocalStorageService
   ) { }
 
   initFromPeerToPeer() {
     if (this.subs.length > 0) return;
+
     this.state.players = [];
-    this.subs.forEach(t => t.unsubscribe());
+        
+    const peerId = this.peerToPeerService.getId();
+    const previousIds = this.localStorageService.localState.previousIds;
+    if (!previousIds.includes(peerId)) {
+      previousIds.push(peerId);
+      this.localStorageService.localState.previousIds = previousIds.slice(Math.max(previousIds.length - 10, 0));
+      this.localStorageService.updateLocalState();
+    }
     this.subs = [
       this.peerToPeerService.connectionRemoved.subscribe(playerId => {
-        this.state.players = this.state.players.filter(t => t.id !== playerId);
+        if (this.peerToPeerService.getIsHost()) {
+          this.peerToPeerService
+        }
+        const player = this.getPlayerById(playerId);
+        if (player) {
+          player.disconnected = true;
+        }
       }),
       this.peerToPeerService.getMessageObservable().subscribe((message: IGenericMessage<IResponseData>) => {
         switch(message.data.command) {
           case 'UPDATE_PLAYER': {
             let player = this.getPlayerById(message.data.playerId);
             if (!player) {
-              if (this.state.players.length >= MAX_PLAYERS) {
-                logger.info(`a new player ${message.data.state.name} tried to join, but game was full`);
-                break;
-              }
+              // if (this.state.players.length >= MAX_PLAYERS) {
+              //   logger.info(`a new player ${message.data.state.name} tried to join, but game was full`);
+              //   break;
+              // }
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
+              if (this.localStorageService.localState.previousIds.includes(player.id)
+                  && player.id !== this.peerToPeerService.getId()) {
+                logger.info(`has been ${player.id} before.`);
+                this.state.rejoinCandidate = player;
+              }
             }
             new PlayerModelUpdater().updatePlayer(player, message.data.state);
           } break;
           case 'GAME_START': {
             this.letter$ = new SubscribableQueue<Letter>();
             this.resetLocalState();
-            // this.state.totalTilesInGame = message.data.totalTiles;
             this.gameStart$.next(true);
+          } break;
+          case 'REJOIN_AS_PLAYER': {
+            logger.info("REJOIN AS PLAYER", message);
+            const player = this.getPlayerById(message.data.toPlayer);
+            if (player) {
+              this.state.players = this.state.players.filter(t => t.id !== message.from);
+              (player as any).id = message.from;
+              player.disconnected = false;
+
+              if (player.id === this.peerToPeerService.getId()) {
+                this.state.rejoinCandidate = null;
+              }
+            }
           } break;
           case 'RECEIVE_LETTERS': {
             const player = this.getPlayerById(message.data.playerId);
@@ -99,6 +133,10 @@ export class GameService {
               this.loser$.next();
             }
           } break;
+          case 'PLAYER_DISCONNECTED': {
+            let player = this.getPlayerById(message.data.playerId);
+            if (player) player.disconnected = true;
+          } break;
           case 'WINNER': {
             this.winner$.next();
           } break;
@@ -111,6 +149,10 @@ export class GameService {
         }
       })
     ];
+
+    this.peerToPeerService.sendSingleMessage(this.peerToPeerService.getHostId(), {
+      command: 'REQUEST_ALL_STATE'
+    });
   }
 
   dispose() {
@@ -124,19 +166,28 @@ export class GameService {
       player.boardState = new BoardState();
       player.tilesUsed = 0;
       player.isEliminated = false;
+      player.isSpectator = false;
     });
     this.state.canClaimSuccess = false;
+  }
+
+  rejoinAsPlayer(player: PlayerModel) {
+    this.peerToPeerService.broadcastAndToSelf({
+      command: 'REJOIN_AS_PLAYER',
+      toPlayer: player.id
+    });
   }
 
   updatePlayer(name: string) {
     let player = this.getOrCreateMyPlayer();
     player.name = name;
-    this.sendUpdateMessage(player);
+    this.sendPlayerUpdateMessage(player);
+    this.sendPlayerUpdateMessage(player, this.peerToPeerService.getId());
   }
 
   updateAfterDrop() {
     let player = this.getOrCreateMyPlayer();
-    player.tilesUsed = player.boardState.squares.reduce((a, sq) => a + (sq.dropzoneRef?.id < GRID_SIZE * GRID_SIZE ? 1 : 0), 0);
+    player.tilesUsed = player.boardState.squares.reduce((a, sq) => a + (sq.dropIndex < GRID_SIZE * GRID_SIZE ? 1 : 0), 0);
     this.state.canClaimSuccess = this.canClaimSuccess();
     this.sendUpdateMessage(this.getOrCreateMyPlayer());
   }
@@ -149,20 +200,32 @@ export class GameService {
     return this.boardAlgorithmsService.isOneComponent(player.boardState.squares);
   }
 
-  echoAllPlayers() {
-    for (let player of this.state.players) {
-      this.sendUpdateMessage(player);
-    }
+  private sendUpdateMessage(player: PlayerModel) {
+    this.sendPlayerUpdateMessage(player);
   }
 
-  private sendUpdateMessage(player: PlayerModel) {
-    const partialPlayer: Partial<PlayerModel> = JSON.parse(JSON.stringify(player));
-    partialPlayer.boardState.dropzones = [];
-    this.peerToPeerService.broadcastAndToSelf({
+  sendPlayerUpdateMessage(player: PlayerModel, to: string = null) {
+    const keysToCopy = playerKeysToUpdate.filter(t => t !== 'boardState');
+    let res: Partial<PlayerModel> = {};
+    for (const key of keysToCopy) {
+      res[key as any] = player[key];
+    }
+    res.boardState = {
+      dropzones: [],
+      squares: player.boardState.squares
+    } as BoardState;
+
+    const message: MessageData = {
       command: 'UPDATE_PLAYER',
-      state: partialPlayer,
+      state: res,
       playerId: player.id
-    })
+    };
+  
+    if (to) {
+      this.peerToPeerService.sendSingleMessage(to, message);
+    } else {
+      this.peerToPeerService.broadcast(message);
+    }
   }
 
   claimSuccess() {
@@ -201,11 +264,12 @@ export class GameService {
       tilesUsedByPlayers: 0,
       tilesRemaining: 0,
       players: [],
-      totalPeerCount: 1,
+      totalPeerCount: 0,
       inGame: false,
       nextPeelWins: false,
       gameOver: false,
-      myPlayer: null
+      myPlayer: null,
+      rejoinCandidate: null
     }
   }
 

@@ -6,7 +6,6 @@ export class SquareModel {
   x: number = 0;
   y: number = 0;
   letter: Letter = 'A';
-  dropzoneRef?: DropzoneModel = null;
   dropIndex: number = -1;
   lastClicked: boolean = false;
   invalid: boolean;

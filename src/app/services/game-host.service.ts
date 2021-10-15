@@ -34,7 +34,16 @@ export class GameHostService {
   ) {
     this.subs = [
       this.peerToPeerService.connectionAdded.subscribe(() => this.updateSharedState()),
-      this.peerToPeerService.connectionRemoved.subscribe(() => this.updateSharedState()),
+      this.peerToPeerService.connectionRemoved.subscribe(playerId => {
+        const player = this.gameService.getPlayerById(playerId);
+        if (player) {
+          this.peerToPeerService.broadcastAndToSelf({
+            command: 'PLAYER_DISCONNECTED',
+            playerId: player.id
+          });
+        }
+        this.updateSharedState();
+      }),
       this.peerToPeerService.getMessageObservable().subscribe((message: IGenericMessage<IRequestData>) => {
         switch(message.data.command) {
           case 'DUMP_LETTER': {
@@ -83,6 +92,16 @@ export class GameHostService {
             }
             this.updateSharedState();
           } break;
+          case 'REQUEST_ALL_STATE': {
+            for (let player of this.gameService.state.players) {
+              this.gameService.sendPlayerUpdateMessage(player, message.from);
+            }
+            this.updateSharedState();
+          } break;
+          case 'REJOIN_AS_PLAYER': {
+            this.state.lettersPerPlayer[message.from] = this.state.lettersPerPlayer[message.data.toPlayer] ?? new Multiset();
+            this.state.lettersPerPlayer[message.data.toPlayer] = new Multiset();
+          } break;
         }
       })
     ];
@@ -94,6 +113,7 @@ export class GameHostService {
 
   async startGame() {
     this.dispose();
+    this.state.inGame = true;
     this.peerToPeerService.broadcastAndToSelf({
       command: 'GAME_START'
     });
@@ -102,11 +122,11 @@ export class GameHostService {
       this.state.lettersPerPlayer[player.id] = new Multiset<Letter>();
     }
 
-    this.state.letters = this.initialTilesProviderService.getInitialTiles();
+    this.state.letters = this.initialTilesProviderService.getInitialTiles(numPlayers);
     GameHostService.shuffleArray(this.state.letters);
     const initTiles = this.initialTilesProviderService.getNumTilesPerPlayer(numPlayers);
     this.state.totalTilesInGame = this.state.letters.length;
-    this.giveEveryPlayerNLetters(initTiles);
+    this.giveEveryPlayerNLetters(initTiles, true);
     this.updateSharedState();
   }
 
@@ -123,17 +143,23 @@ export class GameHostService {
   }
 
   returnToLobby() {
+    this.state.inGame = false;
     this.peerToPeerService.broadcastAndToSelf({
       command: 'RETURN_TO_LOBBY'
     });
   }
 
-  private giveEveryPlayerNLetters(n: number) {
-    for (const player of this.gameService.state.players) {
-      if (player.isEliminated) continue;
+  private giveEveryPlayerNLetters(n: number, firstTurn = false) {
+    for (const player of this.getActivePlayers(firstTurn)) {
+      if (player.disconnected) continue;
       const letters = this.takeLetters(n);
       this.sendPlayerLetters(player.id, letters);
     } 
+  }
+
+  private getActivePlayers(firstTurn = false) {
+    return this.gameService.state.players
+      .filter(t => !t.isEliminated && (firstTurn || (this.state.lettersPerPlayer[t.id]?.size ?? 0) > 0));
   }
 
   private sendPlayerLetters(peerId: string, letters: Array<Letter>) {
@@ -147,7 +173,8 @@ export class GameHostService {
   }
 
   private get nextPeelWins() {
-    return this.state.letters.length < this.gameService.state.players.length - this.state.losers.length;
+    const numActivePlayers = this.getActivePlayers().length;
+    return this.state.letters.length < numActivePlayers;
   }
 
   private get canDump() {
