@@ -5,8 +5,4 @@ export class DropzoneModel {
   constructor(id: number) {
     this.id = id;
   }
-
-  setActive(active: boolean) {
-    this.active = active;
-  }
 }

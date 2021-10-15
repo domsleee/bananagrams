@@ -13,9 +13,8 @@
         <div class="dropzone"
           *ngFor="let zoneIndex of topDropzones; let i = index"
           [attr.data-id]="i"
-          [class.droppable]="true"
+          [class.droppable]="boardState.dropzones[zoneIndex].active"          
         ></div>
-        <!-- [class.droppable]="boardState.dropzones[zoneIndex].active" -->
 
       </div>
 
@@ -33,9 +32,8 @@
         <div class="dropzone"
           *ngFor="let zoneIndex of bottomDropzones; let i = index"
           [attr.data-id]="zoneIndex"
-          [class.droppable]="true"
+          [class.droppable]="boardState.dropzones[zoneIndex].active"
         ></div>
-        <!-- [class.droppable]="boardState.dropzones[zoneIndex].active" -->
       </div>
     </div>
   </div>

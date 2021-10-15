@@ -4,8 +4,8 @@ import { ModelUpdaterHelper } from "./helpers";
 
 export class BoardUpdater {
   updateBoard(boardState: BoardState, newBoardState: Partial<BoardState>) {
-    const inv = this.getInvSquares(boardState);
-    const newInv = this.getInvSquares(newBoardState);
+    const inv = this.getInvSquares(boardState.squares);
+    const newInv = this.getInvSquares(newBoardState.squares);
     const idsToRemove = [];
 
     for (let sq of boardState.squares) {
@@ -33,9 +33,9 @@ export class BoardUpdater {
     boardState.squares = boardState.squares.filter(t => !idsToRemove.includes(t.id));
   }
 
-  private getInvSquares(state: Partial<BoardState>): {[key: string]: Partial<SquareModel>} {
+  getInvSquares(squares: Array<SquareModel>): {[key: string]: Partial<SquareModel>} {
     const res = {};
-    for (let sq of state.squares) {
+    for (let sq of squares) {
       res[sq.id] = sq;
     }
     return res;

@@ -14,6 +14,7 @@ import { getLogger } from 'loglevel';
 import { Router } from '@angular/router';
 import { RouteNames } from '../pages/routes';
 import { BoardState } from '../utils/board';
+import { BoardAlgorithmsService } from './board-algorithms.service';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -50,7 +51,8 @@ export class GameService {
   constructor(
     private peerToPeerService: PeerToPeerService,
     private invalidSquareFinderService: InvalidSquareFinderService,
-    private router: Router
+    private router: Router,
+    private boardAlgorithmsService: BoardAlgorithmsService
   ) { }
 
   initFromPeerToPeer() {
@@ -144,23 +146,7 @@ export class GameService {
     const allTilesUsed = player.tilesUsed === player.totalTiles;
     if (!allTilesUsed) return false;
 
-    let edges = 0;
-    const sqIds = player.boardState.squares.filter(t => t.dropIndex !== -1).map(t => t.dropIndex);
-    for (let i = 0; i < sqIds.length; ++i) {
-      for (let j = i+1; j < sqIds.length; ++j) {
-        const id1 = sqIds[i];
-        const id2 = sqIds[j];
-        let c1 = id1 % GRID_SIZE;
-        let c2 = id2 % GRID_SIZE;
-        const verticalEdge = id1 + GRID_SIZE === id2 || id1 - GRID_SIZE === id2;
-        const horizontalEdge = (id1 + 1 === id2 && c1 + 1 == c2) || (id1 - 1 == id2 && c1 - 1 == c2);
-        if (verticalEdge || horizontalEdge) {
-          edges++;
-        }
-      }
-    }
-
-    return edges === player.totalTiles-1;
+    return this.boardAlgorithmsService.isOneComponent(player.boardState.squares);
   }
 
   echoAllPlayers() {

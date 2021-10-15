@@ -79,13 +79,12 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       const squareEl = event.target as HTMLElement;
       const square = this.boardState.getSquareFromEl(squareEl);
       this.updateLastSquare(square);
-      square.dropzoneRef.setActive(true);
+      square.dropzoneRef.active = true;
       square.dropIndex = -1;
     })
     .on('up', (event) => {
       const squareEl = event.target as HTMLElement;
       const square = this.boardState.getSquareFromEl(squareEl);
-      square.dropzoneRef.setActive(false);
       square.dropIndex = square.dropzoneRef.id;
       const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropzoneRef.id}']`) as HTMLElement;
       this.setCoordsBasedOnDropZone(square, dropzoneEl);
@@ -129,7 +128,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   dump() {
     if (!this.lastSquare) return;
     const sq = this.lastSquare;
-    sq.dropzoneRef?.setActive(true);
+    if (sq.dropzoneRef) {
+      sq.dropzoneRef.active = true;
+    }
     this.gameService.dump(sq);
     this.updateLastSquare(null);
     this.gameService.updateAfterDrop();
@@ -156,7 +157,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
           const dropzone = this.boardState.getDropzone(dropzoneEl);
           if (dropzone.active) {
             this.setCoordsBasedOnDropZone(sq, dropzoneEl);
-            dropzone.active = false;
             return true;
           }
           return false;
@@ -183,7 +183,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       square,
       dropzoneRec.left-boardRec.left-window.scrollX,
       dropzoneRec.top-boardRec.top-window.scrollY);
+
+    square.dropzoneRef.active = true;
     square.dropzoneRef = this.boardState.getDropzone(dropzoneEl);
+    square.dropzoneRef.active = false;
   }
 
   private setElementCoords(square: SquareModel, x: number, y: number) {
