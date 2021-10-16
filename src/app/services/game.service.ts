@@ -85,10 +85,6 @@ export class GameService {
           case 'UPDATE_PLAYER': {
             let player = this.getPlayerById(message.data.playerId);
             if (!player) {
-              // if (this.state.players.length >= MAX_PLAYERS) {
-              //   logger.info(`a new player ${message.data.state.name} tried to join, but game was full`);
-              //   break;
-              // }
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
               if (this.localStorageService.localState.previousIds.includes(player.id)

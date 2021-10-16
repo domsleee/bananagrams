@@ -2,3 +2,74 @@
 body, html {
   font-family: helvetica, sans-serif;
 }
+
+.banana {
+  background-image: url('/bananagrams/assets/small-banana.png');
+  width: 40px;
+  height: 28px;
+  background-size: contain;
+
+  position: absolute;
+  top: 350px;//200px;
+  left: calc(50% - 5px);
+}
+
+
+// animation classes
+
+$n: 100;
+
+@for $i from 1 through $n {
+  $duration: 2 + (random(2000)/1000) + s;
+  .banana-animation-#{$i} {
+    animation: square-#{$i} $duration linear infinite;
+  }
+  .banana-inner-#{$i} {
+    animation: rot-#{$i} $duration infinite;
+  }
+
+  @keyframes rot-#{$i} {
+    $negative: 1;
+    @if random(100) > 50 {
+      $negative: -1;
+    }
+    $endRot: $negative * (360+random(720));
+    0% {
+      transform: rotate(0);
+    }
+    100% {
+      transform: rotate($endRot + deg);
+    }
+  }
+
+  @keyframes square-#{$i} {
+    $endx: -300 + random(600);
+    $endy: 0 + random(400);
+    $endrot: 360 + random(360*5);
+
+    0% {
+      opacity: 0;
+      transform: translate(0, 100 - random(200) + px);
+      animation-timing-function: cubic-bezier(0.33333, 0.66667, 0.66667, 1);
+    }
+    22% {
+      opacity: 0;
+    }
+    25% {
+      opacity: 100;
+      transform: translate(0, 100 - random(200) + px) ;
+      animation-timing-function: cubic-bezier(0.33333, 0.66667, 0.66667, 1);
+    }
+    50% {
+      transform: translate($endx * 0.33 + px, -100 - random(100) + px);
+      animation-timing-function: cubic-bezier(0.33333, 0, 0.66667, 0.33333);
+    }
+    80% {
+      transform: translate($endx + px, $endy + px);
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+}

@@ -67,6 +67,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
         start: (event) => {
         },
         end: (event) => {
+          const squareEl = event.target as HTMLElement;
+          const square = this.boardState.getSquareFromEl(squareEl);
+          const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropIndex}']`) as HTMLElement;
+          this.setCoordsBasedOnDropZone(square, dropzoneEl);
+          this.gameService.updateAfterDrop();
         },
         move: (event) => {
           const square = this.boardState.getSquareFromEl(event.target);
@@ -87,14 +92,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
       const square = this.boardState.getSquareFromEl(squareEl);
       this.updateLastSquare(square);
       this.setDropzoneActive(square.dropIndex, true);
-      square.dropIndex = -1;
     })
     .on('up', (event) => {
-      const squareEl = event.target as HTMLElement;
-      const square = this.boardState.getSquareFromEl(squareEl);
-      const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropIndex}']`) as HTMLElement;
-      this.setCoordsBasedOnDropZone(square, dropzoneEl);
-      this.gameService.updateAfterDrop();
+
     });
 
     interact('.dropzone.droppable').dropzone({
@@ -105,7 +105,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
         const squareEl = event.relatedTarget as HTMLElement;
         const square = this.boardState.getSquareFromEl(squareEl);
         const dropzoneRef = this.boardState.getDropzone(event.target);
-        square.dropIndex = dropzoneRef ? dropzoneRef.id : -1;
+        if (dropzoneRef) square.dropIndex = dropzoneRef.id;
         event.target.classList.add('drop-target');
       },
       ondragleave: function (event) {
@@ -140,9 +140,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy {
   dump() {
     if (!this.lastSquare) return;
     const sq = this.lastSquare;
-    if (sq.dropIndex !== -1) {
-      this.setDropzoneActive(sq.dropIndex, true);
-    }
+    this.setDropzoneActive(sq.dropIndex, true);
     this.gameService.dump(sq);
     this.updateLastSquare(null);
     this.gameService.updateAfterDrop();

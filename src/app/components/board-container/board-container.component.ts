@@ -6,6 +6,7 @@ import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { InvalidSquareFinderService } from 'src/app/services/invalid-square-finder.service';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
+import { BananaAnimation } from 'src/app/shared/banana-animation';
 
 @Component({
   selector: 'app-board-container',
@@ -39,6 +40,7 @@ export class BoardContainerComponent implements OnInit {
         const winnerId = this.gameServiceState.winnerId;
         this.activePlayer = this.gameService.getPlayerById(winnerId);
         this.winner = this.activePlayer;
+        this.playAnimation();
       }),
       this.gameService.loser$.subscribe(() => {
         let mySquares = this.gameService.getOrCreateMyPlayer().boardState.squares;
@@ -48,6 +50,10 @@ export class BoardContainerComponent implements OnInit {
         this.gameService.updateAfterDrop();
       })
     ]
+  }
+
+  ngAfterViewInit() {
+    //this.playAnimation();
   }
 
   selectPlayer(player: PlayerModel) {
@@ -62,4 +68,18 @@ export class BoardContainerComponent implements OnInit {
     this.gameHostService.returnToLobby();
   }
 
+  playAnimation() {
+    new BananaAnimation().runAnimation();
+    return;
+    // const children = new Array(50).fill(null).map(() => document.createElement('div'));
+    // children.forEach((t, i) => {
+    //   const div = document.createElement('div');
+    //   t.appendChild(div);
+    //   t.classList.add('banana-animation-'+i);
+    //   //div.classList.add('banana');
+    //   div.classList.add('banana-inner-'+i)
+    // });
+    // console.log(children);
+    // children.forEach(t => document.getElementById('board').appendChild(t));
+  }
 }

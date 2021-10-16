@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GameHostService } from 'src/app/services/game-host.service';
@@ -22,7 +23,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private gameService: GameService,
     private peerToPeerService: PeerToPeerService,
     private gameHostService: GameHostService,
-    private router: Router
+    private router: Router,
+    @Inject(APP_BASE_HREF) public baseHref: string
   ) { }
 
   async ngOnInit() {
