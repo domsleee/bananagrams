@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { SquareModel } from 'src/app/models/square-model';
@@ -14,7 +14,7 @@ import { BananaAnimation } from 'src/app/shared/banana-animation';
   styleUrls: ['./board-container.component.scss']
 })
 export class BoardContainerComponent implements OnInit, OnDestroy {
-  readonly animation = new BananaAnimation();
+  readonly animation: BananaAnimation;
   gameServiceState: Readonly<GameServiceState>;
   activePlayer: PlayerModel;
   winner?: PlayerModel;
@@ -27,8 +27,11 @@ export class BoardContainerComponent implements OnInit, OnDestroy {
     private gameService: GameService,
     private peerToPeerService: PeerToPeerService,
     private gameHostService: GameHostService,
-    private invalidSquareService: InvalidSquareFinderService
-  ) { }
+    private invalidSquareService: InvalidSquareFinderService,
+    private ngZone: NgZone
+  ) {
+    this.animation = new BananaAnimation(this.ngZone);
+  }
 
   ngOnInit(): void {
     this.isHost = this.peerToPeerService.getIsHost();
@@ -74,7 +77,7 @@ export class BoardContainerComponent implements OnInit, OnDestroy {
   }
 
   private playAnimation() {
-    this.animation.runAnimation();
+    this.ngZone.runOutsideAngular(() => this.animation.runAnimation());
   }
 
   private destroyAnimation() {
