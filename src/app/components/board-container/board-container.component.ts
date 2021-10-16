@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { SquareModel } from 'src/app/models/square-model';
@@ -13,7 +13,8 @@ import { BananaAnimation } from 'src/app/shared/banana-animation';
   templateUrl: './board-container.component.html',
   styleUrls: ['./board-container.component.scss']
 })
-export class BoardContainerComponent implements OnInit {
+export class BoardContainerComponent implements OnInit, OnDestroy {
+  readonly animation = new BananaAnimation();
   gameServiceState: Readonly<GameServiceState>;
   activePlayer: PlayerModel;
   winner?: PlayerModel;
@@ -56,6 +57,10 @@ export class BoardContainerComponent implements OnInit {
     //this.playAnimation();
   }
 
+  ngOnDestroy() {
+    this.destroyAnimation();
+  }
+
   selectPlayer(player: PlayerModel) {
     if (player.id === this.activePlayer?.id) {
       this.activePlayer = null;
@@ -68,18 +73,11 @@ export class BoardContainerComponent implements OnInit {
     this.gameHostService.returnToLobby();
   }
 
-  playAnimation() {
-    new BananaAnimation().runAnimation();
-    return;
-    // const children = new Array(50).fill(null).map(() => document.createElement('div'));
-    // children.forEach((t, i) => {
-    //   const div = document.createElement('div');
-    //   t.appendChild(div);
-    //   t.classList.add('banana-animation-'+i);
-    //   //div.classList.add('banana');
-    //   div.classList.add('banana-inner-'+i)
-    // });
-    // console.log(children);
-    // children.forEach(t => document.getElementById('board').appendChild(t));
+  private playAnimation() {
+    this.animation.runAnimation();
+  }
+
+  private destroyAnimation() {
+    this.animation.stopAnimation();
   }
 }

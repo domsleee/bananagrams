@@ -26,10 +26,8 @@ export class BananaAnimation {
     }
 
     const nFrames = 140;
-
-    this.frameTimer = new FrameTimer();
     let t = 0;
-    this.frameTimer.onGenerateFrame = () => {
+    const onGenerateFrame = (numFrames: number) => {
       for (let animation of animations) {
         let myT = (t + animation.offsetT) % nFrames;
         const rot = animation.rot * (myT / nFrames);
@@ -45,9 +43,9 @@ export class BananaAnimation {
       t += 1;
       t %= nFrames;
     };
-    this.frameTimer.start();
 
-    //this.timer = setTimeout(() => this.stopAnimation(), 30*1000);
+    this.frameTimer = new FrameTimer({onGenerateFrame});
+    this.frameTimer.start();
   }
 
   stopAnimation() {
@@ -59,19 +57,19 @@ export class BananaAnimation {
 const FPS = 60.098;
 
 export class FrameTimer {
-  onGenerateFrame: () => void;
+  private readonly onGenerateFrame: (numFrames: number) => void;
+
+  private readonly interval: number;
+  private lastFrameTime?: number;
+  private requestId?: number;
+
   running = false;
-  lastFrameTime = null;
-  interval: number;
 
-  private requestId;
-
-  constructor() {
-    // Run at 60 FPS
+  constructor(options: {onGenerateFrame?: (numFrames: number) => void}) {
     this.onAnimationFrame = this.onAnimationFrame.bind(this);
-    this.running = true;
+    this.onGenerateFrame = options.onGenerateFrame;
     this.interval = 1e3 / FPS;
-    this.lastFrameTime = false;
+    this.lastFrameTime = null;
   }
 
   start() {
@@ -82,53 +80,36 @@ export class FrameTimer {
   stop() {
     this.running = false;
     if (this.requestId) window.cancelAnimationFrame(this.requestId);
-    this.lastFrameTime = false;
+    this.lastFrameTime = null;
   }
 
   private requestAnimationFrame() {
     this.requestId = window.requestAnimationFrame(this.onAnimationFrame);
   }
 
-  private generateFrame() {
-    this.onGenerateFrame();
-    this.lastFrameTime += this.interval;
+  private generateFrame(numFrames: number) {
+    if (this.onGenerateFrame) this.onGenerateFrame(numFrames);
   }
 
   private onAnimationFrame = time => {
     this.requestAnimationFrame();
-    // how many ms after 60fps frame time
-    let excess = time % this.interval;
 
-    // newFrameTime is the current time aligned to 60fps intervals.
-    // i.e. 16.6, 33.3, etc ...
-    let newFrameTime = time - excess;
+    let frameDelta = time - this.lastFrameTime;
 
-    // first frame, do nothing
+    let numFrames = Math.floor(frameDelta / this.interval);
+    // first frame
     if (!this.lastFrameTime) {
-      this.lastFrameTime = newFrameTime;
-      return;
+      this.lastFrameTime = time;
+      numFrames = 1;
+    } else {
+      this.lastFrameTime += numFrames * this.interval;
     }
-
-    let numFrames = Math.round(
-      (newFrameTime - this.lastFrameTime) / this.interval
-    );
 
     // This can happen a lot on a 144Hz display
     if (numFrames === 0) {
-      //console.log("WOAH, no frames");
       return;
     }
 
-    this.generateFrame();
-
-    let timeToNextFrame = this.interval - excess;
-    for (let i = 1; i < numFrames; i++) {
-      setTimeout(() => {
-        this.generateFrame();
-      }, (i * timeToNextFrame) / numFrames);
-    }
-    if (numFrames > 1) {
-      // skip frames
-    }
+    this.generateFrame(numFrames);
   };
 }

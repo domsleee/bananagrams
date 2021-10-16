@@ -32,7 +32,6 @@ export class DictionaryService {
     for (let word of arr) {
       this.dict.add(word);
     }
-
   }
 
   hasWord(word: string): boolean {
