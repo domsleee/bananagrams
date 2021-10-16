@@ -11,7 +11,7 @@ export class InitialTilesProviderService {
   constructor() { }
 
   // taken from https://bananagrams.com/blogs/news/how-to-play-bananagrams-instructions-for-getting-started
-  getInitialTiles(numPlayers: number = 0): Letter[] {
+  getInitialTiles(numPlayers: number): Letter[] {
     if (this.initialTilesOverride) return this.initialTilesOverride;
     let result = new Array<Letter>();
     const mult = 1 + Math.floor((numPlayers-1)/8);

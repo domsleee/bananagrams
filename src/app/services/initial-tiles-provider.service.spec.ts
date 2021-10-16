@@ -15,13 +15,13 @@ describe('InitialTilesProviderService', () => {
   });
 
   it('should have 144 letters', () => {
-    expect(service.getInitialTiles().length).toBe(144);
+    expect(service.getInitialTiles(1).length).toBe(144);
   });
 
   it('overrides work', () => {
     service.initialTilesOverride = ['A'];
     service.numTilesPerPlayerOverride = 1;
-    expect(service.getInitialTiles()).toEqual(['A']);
+    expect(service.getInitialTiles(1)).toEqual(['A']);
     expect(service.getNumTilesPerPlayer(1)).toEqual(1);
   })
 });

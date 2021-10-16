@@ -69,7 +69,7 @@ describe('GameHostService', () => {
     expect(service).toBeTruthy();
   });
 
-  fit('player rejoins, then player loses', () => {
+  it('player rejoins, then player loses', () => {
     TestBed.inject(ParamOverrideService).setupOverrides({
       tiles: 'CCCCC',
       numTiles: 2
