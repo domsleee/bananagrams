@@ -144,6 +144,7 @@ export class GameHostService {
 
   returnToLobby() {
     this.state.inGame = false;
+    this.updateSharedState();
     this.peerToPeerService.broadcastAndToSelf({
       command: 'RETURN_TO_LOBBY'
     });

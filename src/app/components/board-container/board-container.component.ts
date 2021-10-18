@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { SquareModel } from 'src/app/models/square-model';
@@ -42,9 +42,8 @@ export class BoardContainerComponent implements OnInit, OnDestroy {
     this.subs = [
       this.gameService.winner$.subscribe(() => {
         const winnerId = this.gameServiceState.winnerId;
-        this.activePlayer = this.gameService.getPlayerById(winnerId);
-        this.winner = this.activePlayer;
-        this.playAnimation();
+        this.winner = this.gameService.getPlayerById(winnerId);
+        this.setActivePlayer(this.winner, true);
       }),
       this.gameService.loser$.subscribe(() => {
         let mySquares = this.gameService.getOrCreateMyPlayer().boardState.squares;
@@ -57,7 +56,10 @@ export class BoardContainerComponent implements OnInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    //this.playAnimation();
+    if (false) {
+      this.winner = this.activePlayer;
+      this.playAnimation();
+    }
   }
 
   ngOnDestroy() {
@@ -65,19 +67,33 @@ export class BoardContainerComponent implements OnInit, OnDestroy {
   }
 
   selectPlayer(player: PlayerModel) {
-    if (player.id === this.activePlayer?.id) {
-      this.activePlayer = null;
-    } else {
-      this.activePlayer = player;
-    }
+    this.setActivePlayer(player);
   }
 
   returnToLobby() {
     this.gameHostService.returnToLobby();
   }
 
+  private setActivePlayer(player: PlayerModel, force = false) {
+    let activePlayerChanged = false;
+    if (player.id === this.activePlayer?.id) {
+      //this.activePlayer = null;
+    } else {
+      this.activePlayer = player;
+      activePlayerChanged = true;
+    }
+    const isWinner = this.activePlayer.id === this.winner?.id;
+    const isMe = this.activePlayer.id === this.myId;
+    if ((activePlayerChanged || force) && isWinner && isMe) {
+      this.playAnimation();
+    } else if (activePlayerChanged) {
+      this.destroyAnimation();
+    }
+  }
+
   private playAnimation() {
-    this.ngZone.runOutsideAngular(() => this.animation.runAnimation());
+    const el = document.getElementsByClassName('board-' + this.winner.id)[0] as HTMLElement;
+    this.ngZone.runOutsideAngular(() => this.animation.runAnimation(el));
   }
 
   private destroyAnimation() {

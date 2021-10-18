@@ -14,12 +14,14 @@
       (click)="returnToLobby()">Return to lobby</button>
   </div>
 
-  <div *ngFor="let player of gameServiceState.players">
+  <div
+    *ngFor="let player of gameServiceState.players"
+    [class]="'board-' + player.id"
+    style="position: relative">
     <app-board
       *ngIf="player.id === activePlayer?.id"
-      [style.opacity]="5"
       [playerModel]="player"
-      [readonly]="player.id !== myId || gameServiceState.winnerId !== null || player.isEliminated"
+      [readonly]="player.id !== myId || gameServiceState.winnerId !== null || player.isEliminated || player.disconnected"
     ></app-board>
   </div>
 

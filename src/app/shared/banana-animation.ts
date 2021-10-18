@@ -22,11 +22,16 @@ const nFrames = 140;
 export class BananaAnimation {
   private timer: any;
   private frameTimer: FrameTimer;
+  private animations: AnimationInfo[];
 
   constructor(private ngZone: NgZone) {}
 
-  runAnimation() {
+  runAnimation(el: HTMLElement) {
     const animationsToAnimate = this.getAnimationsToAnimate();
+
+    for (const animation of this.animations) {
+      el.appendChild(animation.div);
+    }
 
     let t = 0;
     const onGenerateFrame = () => {
@@ -47,7 +52,11 @@ export class BananaAnimation {
 
   stopAnimation() {
     clearTimeout(this.timer);
+    this.animations.forEach(t => t.div.remove());
     if (this.frameTimer) this.frameTimer.stop();
+
+    this.frameTimer = null;
+    this.animations = [];
   }
 
   private getAnimationsToAnimate() {
@@ -66,10 +75,6 @@ export class BananaAnimation {
       animations.push(animationInfo);
     }
 
-    for (let animation of animations) {
-      document.getElementById('board').appendChild(animation.div);
-    }
-
     let animationsToAnimate = new Array<Array<AnimationInfo>>(nFrames).fill(null);
     for (let t = 0; t < nFrames; ++t) {
       animationsToAnimate[t] = animations
@@ -77,6 +82,7 @@ export class BananaAnimation {
     }
 
     this.debugInfo(animations);
+    this.animations = animations;
 
     return animationsToAnimate;
   }

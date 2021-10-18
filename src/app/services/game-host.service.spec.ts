@@ -95,6 +95,15 @@ describe('GameHostService', () => {
     flushMessages();
     expect(client1Player.isEliminated).toBeTrue();
     expect(gameService1.state.tilesRemaining).toBe(3, 'the tiles remaining should have carried over');
+  });
 
+  it('ingame works as expected', () => {
+    service.startGame();
+    flushMessages();
+
+    expect(gameService1.state.inGame).toBe(true);
+    service.returnToLobby();
+    flushMessages();
+    expect(gameService1.state.inGame).withContext('should not be in game').toBe(false);
   })
 });

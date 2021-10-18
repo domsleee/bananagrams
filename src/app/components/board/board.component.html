@@ -20,13 +20,13 @@
 
       <div id="startArea">
         <div>
-          <div style="font-size:15px;">tiles remaining: {{readonlyGameServiceState.tilesRemaining}}</div>
+          <div style="font-size:15px;">tiles remaining: {{gameServiceState.tilesRemaining}}</div>
           <button class="win"
             (click)="claimSuccess()"
-            [disabled]="!readonlyGameServiceState.canClaimSuccess || readonly">{{readonlyGameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
+            [disabled]="!gameServiceState.canClaimSuccess || readonly">{{gameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
           <button class="dump"
             (click)="dump()"
-            [disabled]="!readonlyGameServiceState.canDump || !lastSquare">dump</button>
+            [disabled]="!gameServiceState.canDump || !lastSquare">dump</button>
           <!-- <div style="font-size:15px;">{{readonlyGameServiceState.tilesUsedByPlayers}} / {{readonlyGameServiceState.totalTilesInGame}} ({{readonlyGameServiceState.tilesRemaining}} remaining)</div> -->
         </div>
         <div class="dropzone droppable"
