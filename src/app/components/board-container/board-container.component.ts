@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { SquareModel } from 'src/app/models/square-model';
@@ -13,7 +13,7 @@ import { BananaAnimation } from 'src/app/shared/banana-animation';
   templateUrl: './board-container.component.html',
   styleUrls: ['./board-container.component.scss']
 })
-export class BoardContainerComponent implements OnInit, OnDestroy {
+export class BoardContainerComponent implements OnInit, OnDestroy, AfterViewInit {
   readonly animation: BananaAnimation;
   gameServiceState: Readonly<GameServiceState>;
   activePlayer: PlayerModel;

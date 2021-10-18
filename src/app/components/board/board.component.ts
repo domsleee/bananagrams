@@ -15,7 +15,7 @@ const logger = getLogger('board');
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss']
 })
-export class BoardComponent implements AfterViewInit, OnDestroy {
+export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   @Input() playerModel: PlayerModel;
   @Input() readonly: boolean = false;
 
