@@ -28,7 +28,6 @@ export class LobbyComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
-    console.log('ngOnInit');
     this.isHost = this.peerToPeerService.getIsHost();
     this.gameServiceState = this.gameService.state;
     this.gameService.initFromPeerToPeer();

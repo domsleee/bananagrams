@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
-import { DictionaryService } from 'src/app/services/dictionary.service';
+import { ActivatedRoute } from '@angular/router';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService } from 'src/app/services/game.service';
-import { InitialTilesProviderService } from 'src/app/services/initial-tiles-provider.service';
 import { ParamOverrideService } from 'src/app/services/param-override.service';
 
 @Component({

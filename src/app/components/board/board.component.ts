@@ -7,6 +7,7 @@ import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { getLogger } from 'src/app/services/logger';
+import { KeyboardEventsService } from 'src/app/services/keyboard-events.service';
 
 const logger = getLogger('board');
 
@@ -25,15 +26,18 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly bottomDropzones = Array(GRID_SIZE*START_AREA_ROWS).fill(null).map((t, i) => GRID_SIZE*GRID_SIZE + i);
 
   readonly gameServiceState: Readonly<GameServiceState>;
-  letterSubscription: Subscription;
   lastSquare?: SquareModel;
 
   private readonly clickHander;
   private squareIdCounter = 500;
   private dropIndexesUsed = new Set<number>();
   private interactables: Interactable[] = [];
+  private subs: Subscription[] = [];
 
-  constructor(private gameService: GameService) {
+  constructor(
+    private gameService: GameService,
+    private keyboardEventsService: KeyboardEventsService
+  ) {
     this.gameServiceState = gameService.state;
     this.clickHander = this.clickEventListener.bind(this);
   }
@@ -53,9 +57,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    this.letterSubscription?.unsubscribe();
+    this.subs.forEach(t => t.unsubscribe());
     this.interactables.forEach(t => t.unset());
     document.removeEventListener('click', this.clickHander);
+    this.keyboardEventsService.detachListeners();
   }
 
   get boardState() {
@@ -65,10 +70,17 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   ngAfterViewInit() {
     if (this.readonly) return;
 
+    this.keyboardEventsService.attachListeners();
+
     this.unloadQueue();
-    this.letterSubscription = this.gameService.letter$.subject.subscribe(() => {
-      this.unloadQueue();
-    });
+    this.subs = [
+      this.gameService.letter$.subject.subscribe(() => {
+        this.unloadQueue();
+      }),
+      this.keyboardEventsService.keydownFirstTime.subscribe((key: string) => {
+        this.moveAllSquares(key);
+      })
+    ]
 
     this.interactables = [
       interact('.draggable').draggable({
@@ -78,8 +90,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
           end: (event) => {
             const squareEl = event.target as HTMLElement;
             const square = this.boardState.getSquareFromEl(squareEl);
-            const dropzoneEl = document.querySelector(`.dropzone[data-id='${square.dropIndex}']`) as HTMLElement;
-            this.setCoordsBasedOnDropZone(square, dropzoneEl);
+            this.setCoordsBasedOnDropIndex(square, square.dropIndex);
             this.gameService.updateAfterDrop();
           },
           move: (event) => {
@@ -198,6 +209,15 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
     })
   }
 
+  private setCoordsBasedOnDropIndex(square: SquareModel, dropIndex: number) {
+    const dropzoneEl = document.querySelector(`.dropzone[data-id='${dropIndex}']`) as HTMLElement;
+    const dropzone = this.boardState.getDropzone(dropzoneEl);
+    if (!dropzone.active) {
+      logger.warn('dropping square on INACTIVE dropzone??');
+    }
+    this.setCoordsBasedOnDropZone(square, dropzoneEl);
+  }
+
   private setCoordsBasedOnDropZone(square: SquareModel, dropzoneEl: HTMLElement) {
     const dropzoneRec = interact.getElementRect(dropzoneEl);
     const boardEl = document.getElementById('board');
@@ -221,5 +241,18 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
     if (this.lastSquare) this.lastSquare.lastClicked = false;
     this.lastSquare = square;
     if (this.lastSquare) this.lastSquare.lastClicked = true;
+  }
+
+  private moveAllSquares(keycode: string) {
+    const res = this.gameService.moveAllSquares(keycode);
+    if (res.shouldMove) {
+      for (let i = 0; i < res.squaresInPlay.length; ++i) {
+        const sq = res.squaresInPlay[i];
+        const newDropIndex = res.movedIds[i];
+        if (sq.dropIndex === newDropIndex) continue;
+        this.setCoordsBasedOnDropIndex(sq, newDropIndex);
+      }
+      this.gameService.updateAfterDrop();
+    }
   }
 }

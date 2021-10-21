@@ -10,12 +10,12 @@ import { SquareModel } from '../models/square-model';
 import { InvalidSquareFinderService } from './invalid-square-finder.service';
 import { SubscribableQueue } from '../shared/subscribable-queue';
 import { playerKeysToUpdate, PlayerModelUpdater } from '../shared/updaters/player-model-updater';
-import { getLogger } from 'loglevel';
 import { Router } from '@angular/router';
 import { RouteNames } from '../pages/routes';
 import { BoardState } from '../utils/board';
-import { BoardAlgorithmsService } from './board-algorithms.service';
+import { BoardAlgorithmsService, Direction, directions } from './board-algorithms.service';
 import { LocalStorageService } from './local-storage.service';
+import { getLogger } from './logger';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -249,6 +249,32 @@ export class GameService {
       player = new PlayerModel(this.peerToPeerService.getId());
     }
     return this.state.myPlayer = player;
+  }
+
+  moveAllSquares(keycode: string) {
+    const direction = directions.find(d => d === keycode);
+    if (!direction) return {shouldMove: false};
+
+    const myPlayer = this.getOrCreateMyPlayer();
+    let squaresInPlay = myPlayer.boardState.squares.filter(t => t.dropIndex < GRID_SIZE * GRID_SIZE);
+    let movedIds = this.boardAlgorithmsService.getMovedSquareIds(squaresInPlay, direction);
+    
+    const set = new Set(movedIds);
+    if (set.size !== squaresInPlay.length) {
+      logger.debug(`refused to moved squares ${set.size} != ${squaresInPlay.length}`, set, movedIds);
+      return {shouldMove: false};
+    }
+
+    const sortFns: {[key in Direction]: (a1: SquareModel, a2: SquareModel) => number} = {
+      'ArrowRight': (a1, a2) => a2.dropIndex - a1.dropIndex,
+      'ArrowLeft': (a1, a2) => a1.dropIndex - a2.dropIndex,
+      'ArrowUp': (a1, a2) => a1.dropIndex - a2.dropIndex,
+      'ArrowDown': (a1, a2) => a2.dropIndex - a1.dropIndex
+    }
+
+    const sortFn = sortFns[keycode];
+    [squaresInPlay, movedIds] = this.boardAlgorithmsService.sortTwoArrays(squaresInPlay, movedIds, sortFn);
+    return {shouldMove: true, squaresInPlay, movedIds};
   }
 
   private static getInitialState(): GameServiceState {
