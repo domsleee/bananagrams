@@ -1,5 +1,7 @@
 # Bananagrams
 
+[![CircleCI](https://circleci.com/gh/domsleee/bananagrams/tree/main.svg?style=shield)](https://circleci.com/gh/domsleee/bananagrams/tree/main)
+
 [Live link](https://domsleee.github.io/bananagrams/)
 
 ## Test cases
