@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class KeyboardEventsService {
   private readonly keydownHandlerVar;
   private readonly keyupHandlerVar;

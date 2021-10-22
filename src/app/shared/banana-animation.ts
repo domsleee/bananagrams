@@ -22,7 +22,7 @@ const nFrames = 140;
 export class BananaAnimation {
   private timer: any;
   private frameTimer: FrameTimer;
-  private animations: AnimationInfo[];
+  private animations: AnimationInfo[] = [];
 
   constructor(private ngZone: NgZone) {}
 

@@ -6,7 +6,9 @@ describe('KeyboardEventsService', () => {
   let service: KeyboardEventsService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [KeyboardEventsService]
+    });
     service = TestBed.inject(KeyboardEventsService);
   });
 
