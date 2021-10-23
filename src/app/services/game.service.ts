@@ -177,6 +177,7 @@ export class GameService {
   updatePlayer(name: string) {
     let player = this.getOrCreateMyPlayer();
     player.name = name;
+    player.nameEncoded = encodeURI(player.name);
     this.sendPlayerUpdateMessage(player);
     this.sendPlayerUpdateMessage(player, this.peerToPeerService.getId());
   }
@@ -201,9 +202,8 @@ export class GameService {
   }
 
   sendPlayerUpdateMessage(player: PlayerModel, to: string = null) {
-    const keysToCopy = playerKeysToUpdate.filter(t => t !== 'boardState');
     let res: Partial<PlayerModel> = {};
-    for (const key of keysToCopy) {
+    for (const key of playerKeysToUpdate) {
       res[key as any] = player[key];
     }
     res.boardState = {

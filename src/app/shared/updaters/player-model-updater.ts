@@ -6,7 +6,7 @@ export const playerKeysToUpdate: Array<keyof PlayerModel> = [
   'isEliminated',
   'isSpectator',
   'tilesUsed',
-  'name',
+  'nameEncoded',
   'disconnected',
   'totalTiles'
 ];
@@ -15,6 +15,10 @@ export class PlayerModelUpdater {
   
   updatePlayer(player: PlayerModel, newPlayer: Partial<PlayerModel>) {
     const helper = new ModelUpdaterHelper(player);
+
+    if ('nameEncoded' in newPlayer && player.nameEncoded !== newPlayer.nameEncoded) {
+      player.name = decodeURI(newPlayer.nameEncoded);
+    }
 
     // do not update totalTiles or boardState, please.
     for (let key of playerKeysToUpdate) {

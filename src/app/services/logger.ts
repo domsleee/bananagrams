@@ -11,5 +11,6 @@ prefix.apply(log, {
 export function getLogger(service: string) {
   const ret = log.getLogger(service);
   ret.setLevel('INFO');
+  //if (service === 'peer-to-peer.service') ret.setLevel('DEBUG');
   return ret;
 }

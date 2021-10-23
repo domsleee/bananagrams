@@ -4,6 +4,7 @@ export class PlayerModel {
   readonly id: string;
 
   name: string;
+  nameEncoded: string;
   tilesUsed: number = 0;
   totalTiles: number = 0;
   boardState: BoardState = new BoardState();
