@@ -181,7 +181,10 @@ export class PeerToPeerService {
     });
   }
 
-  private onPeerDisconnected(conn: any) {
+  private onPeerDisconnected(conn: Peer.DataConnection) {
+    if (!this.isHost) {
+      this.isConnected = false;
+    }
     this.deleteConnectionIfExists(conn.peer);
     this.broadcastAndToSelf({
       command: 'DISCONNECTED',

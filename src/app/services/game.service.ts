@@ -132,6 +132,10 @@ export class GameService {
           case 'PLAYER_DISCONNECTED': {
             let player = this.getPlayerById(message.data.playerId);
             if (player) player.disconnected = true;
+            if (!this.peerToPeerService.getIsConnected() || message.data.playerId === this.peerToPeerService.getHostId()) {
+              const myPlayer = this.getOrCreateMyPlayer();
+              myPlayer.disconnected = true;
+            }
           } break;
           case 'WINNER': {
             this.winner$.next();
