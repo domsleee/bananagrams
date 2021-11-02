@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { InvalidSquareFinderService } from './invalid-square-finder.service';
-import { APP_BASE_HREF } from '@angular/common';
+import { defaultProviders } from '../mocks/test-helpers.spec';
 
 describe('InvalidSquareFinderService', () => {
   let service: InvalidSquareFinderService;
@@ -10,7 +10,7 @@ describe('InvalidSquareFinderService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: APP_BASE_HREF, useValue: 'abc' }
+        ...defaultProviders
       ]
     });
     service = TestBed.inject(InvalidSquareFinderService);

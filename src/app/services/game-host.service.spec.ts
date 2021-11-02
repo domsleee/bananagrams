@@ -1,10 +1,10 @@
-import { APP_BASE_HREF } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { createPeers } from '../mocks/peer-to-peer-helpers';
 import { PeerToPeerServiceMock } from '../mocks/peer-to-peer.service.mock';
+import { defaultProviders } from '../mocks/test-helpers.spec';
 import { PlayerModel } from '../models/player-model';
 import { BoardAlgorithmsService } from './board-algorithms.service';
 
@@ -34,7 +34,7 @@ describe('GameHostService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule],
       providers: [
-        { provide: APP_BASE_HREF, useValue: 'abc' },
+        ...defaultProviders,
         { provide: PeerToPeerService, useValue: peers[0] },
       ]
     });

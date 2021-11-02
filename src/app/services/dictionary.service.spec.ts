@@ -1,6 +1,6 @@
-import { APP_BASE_HREF } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { defaultProviders } from '../mocks/test-helpers.spec';
 
 import { DictionaryService } from './dictionary.service';
 
@@ -11,7 +11,7 @@ describe('DictionaryService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: APP_BASE_HREF, useValue: 'abc' }
+        ...defaultProviders
       ]
     });
     service = TestBed.inject(DictionaryService);
