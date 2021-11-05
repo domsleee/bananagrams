@@ -10,12 +10,13 @@ import { SquareModel } from '../models/square-model';
 import { InvalidSquareFinderService } from './invalid-square-finder.service';
 import { SubscribableQueue } from '../shared/subscribable-queue';
 import { playerKeysToUpdate, PlayerModelUpdater } from '../shared/updaters/player-model-updater';
-import { Router } from '@angular/router';
+import { Navigation, Router } from '@angular/router';
 import { RouteNames } from '../pages/routes';
 import { BoardState } from '../utils/board';
 import { BoardAlgorithmsService, Direction, directions } from './board-algorithms.service';
 import { LocalStorageService } from './local-storage.service';
 import { getLogger } from './logger';
+import { NavigationService } from './navigation.service';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -53,9 +54,9 @@ export class GameService {
   constructor(
     private peerToPeerService: PeerToPeerService,
     private invalidSquareFinderService: InvalidSquareFinderService,
-    private router: Router,
     private boardAlgorithmsService: BoardAlgorithmsService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private navigationService: NavigationService
   ) { }
 
   initFromPeerToPeer() {
@@ -144,7 +145,7 @@ export class GameService {
             Object.assign(this.state, message.data.state);
           } break;
           case 'RETURN_TO_LOBBY': {
-            this.router.navigate([RouteNames.LOBBY + '/' + this.peerToPeerService.getHostId()]);
+            this.navigationService.gotoLobby();
           } break;
         }
       })
@@ -210,10 +211,7 @@ export class GameService {
     for (const key of playerKeysToUpdate) {
       res[key as any] = player[key];
     }
-    res.boardState = {
-      dropzones: [],
-      squares: player.boardState.squares
-    } as BoardState;
+    res.boardState = player.boardState;
 
     const message: MessageData = {
       command: 'UPDATE_PLAYER',

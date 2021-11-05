@@ -11,6 +11,8 @@ import { KeyboardEventsService } from 'src/app/services/keyboard-events.service'
 
 const logger = getLogger('board');
 
+const NUM_TILE_INDEXES = (GRID_SIZE * (START_AREA_ROWS+GRID_SIZE));
+
 @Component({
   selector: 'app-board',
   templateUrl: './board.component.html',
@@ -28,10 +30,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
 
   readonly gameServiceState: Readonly<GameServiceState>;
   lastSquare?: SquareModel;
+  dropIndexHasTile = new Array<boolean>(NUM_TILE_INDEXES).fill(false);
 
   private readonly clickHander;
   private squareIdCounter = 500;
-  private dropIndexesUsed = new Set<number>();
   private interactables: Interactable[] = [];
   private subs: Subscription[] = [];
 
@@ -53,7 +55,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
     }
     for (let sq of this.boardState.squares) {
       this.squareIdCounter = Math.max(this.squareIdCounter, sq.id + 1);
-      this.dropIndexesUsed.add(sq.dropIndex);
+      this.setDropIndexHasTile(sq.dropIndex, true);
     }
   }
 
@@ -91,7 +93,12 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
           end: (event) => {
             const squareEl = event.target as HTMLElement;
             const square = this.boardState.getSquareFromEl(squareEl);
-            this.setCoordsBasedOnDropIndex(square, square.dropIndex);
+            if (this.dropIndexHasTile[square.dropIndex]) {
+              logger.info('unlikely event - an incoming square from another peel has taken the square the tile was being dropped on');
+              this.dropSquareInNearestDropzone(square);
+            } else {
+              this.setCoordsBasedOnDropIndex(square, square.dropIndex);
+            }
             this.gameService.updateAfterDrop();
           },
           move: (event) => {
@@ -112,7 +119,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         const squareEl = event.target as HTMLElement;
         const square = this.boardState.getSquareFromEl(squareEl);
         this.updateLastSquare(square);
-        this.setDropzoneActive(square.dropIndex, true);
+        this.setDropIndexHasTile(square.dropIndex, false);
       }),
 
       interact('.dropzone.droppable').dropzone({
@@ -122,9 +129,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         ondragenter: (event) => {
           const squareEl = event.relatedTarget as HTMLElement;
           const square = this.boardState.getSquareFromEl(squareEl);
-          const dropzoneRef = this.boardState.getDropzone(event.target);
-          if (dropzoneRef && !this.dropIndexesUsed.has(dropzoneRef.id)) {
-            square.dropIndex = dropzoneRef.id;
+          const dropzoneEl = event.target;
+          const dropIndex = parseInt(dropzoneEl.getAttribute('data-id'));
+          if (dropIndex && !this.dropIndexHasTile[dropIndex]) {
+            square.dropIndex = dropIndex;
             event.target.classList.add('drop-target');
           }
         },
@@ -149,19 +157,14 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   dump() {
     if (!this.lastSquare) return;
     const sq = this.lastSquare;
-    this.setDropzoneActive(sq.dropIndex, true);
+    this.setDropIndexHasTile(sq.dropIndex, false);
     this.gameService.dump(sq);
     this.updateLastSquare(null);
     this.gameService.updateAfterDrop();
   }
 
-  private setDropzoneActive(id: number, active: boolean) {
-    const dropzone = this.boardState.getDropzoneFromId(id);
-    if (dropzone) {
-      dropzone.active = active;
-      if (!active) this.dropIndexesUsed.add(id);
-      else this.dropIndexesUsed.delete(id);
-    }
+  private setDropIndexHasTile(dropIndex: number, hasTile: boolean) {
+    this.dropIndexHasTile[dropIndex] = hasTile;
   }
 
   private clickEventListener(event: Event) {
@@ -172,54 +175,53 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private unloadQueue() {
+    const letters = [];
     while (this.gameService.letter$.getLength() > 0) {
-      this.addSquare(this.gameService.letter$.pop());
+      letters.push(this.gameService.letter$.pop());
+    }
+    for (const letter of letters) {
+      this.createSquareAndDropInDropzone(letter);
     }
   }
 
-  private addSquare(letter: Letter): void {
-    window.requestAnimationFrame(() => {
-      const count = this.boardState.squares.length;
-      const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
-      if (this.boardState.squares.length === count) {
-        logger.warn(`could not add new square... apparently ${sq.id} already exists.`);
-      }
-      sq.letter = letter;
+  private createSquareAndDropInDropzone(letter: Letter): void {
+    const count = this.boardState.squares.length;
+    const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
+    if (this.boardState.squares.length === count) {
+      logger.warn(`could not add new square... apparently ${sq.id} already exists.`);
+    }
+    sq.letter = letter;
 
-      const dropInDropzone = () => {
-        const tryDropInDropzone = (i: number): boolean => {
-          const dropzoneEl = document.querySelector(`.dropzone[data-id='${i}']`) as HTMLElement;
-          const dropzone = this.boardState.getDropzone(dropzoneEl);
-          if (dropzone.active) {
-            this.setCoordsBasedOnDropZone(sq, dropzoneEl);
-            return true;
-          }
-          return false;
+    this.dropSquareInNearestDropzone(sq);
+  }
+
+  private dropSquareInNearestDropzone(sq: SquareModel) {
+    const dropInDropzone = () => {
+      const tryDropInDropzone = (i: number): boolean => {
+        if (!this.dropIndexHasTile[i]) {
+          this.setCoordsBasedOnDropIndex(sq, i);
+          return true;
         }
-  
-        for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
-          if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
-        }
-  
-        for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
-          if (tryDropInDropzone(i)) return;
-        }
+        return false;
       }
-      dropInDropzone();
-      this.gameService.updateAfterDrop();
-    })
+
+      for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
+        if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
+      }
+
+      for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
+        if (tryDropInDropzone(i)) return;
+      }
+    }
+    dropInDropzone();
+    this.gameService.updateAfterDrop();
   }
 
   private setCoordsBasedOnDropIndex(square: SquareModel, dropIndex: number) {
-    const dropzoneEl = document.querySelector(`.dropzone[data-id='${dropIndex}']`) as HTMLElement;
-    const dropzone = this.boardState.getDropzone(dropzoneEl);
-    if (!dropzone.active) {
-      logger.warn('dropping square on INACTIVE dropzone??');
+    if (this.dropIndexHasTile[dropIndex]) {
+      logger.warn('dropping square on dropzone that already has a tile???');
     }
-    this.setCoordsBasedOnDropZone(square, dropzoneEl);
-  }
-
-  private setCoordsBasedOnDropZone(square: SquareModel, dropzoneEl: HTMLElement) {
+    const dropzoneEl = document.querySelector(`.dropzone[data-id='${dropIndex}']`) as HTMLElement;
     const dropzoneRec = interact.getElementRect(dropzoneEl);
     const boardEl = document.getElementById('board');
     const boardRec = boardEl.getBoundingClientRect();
@@ -228,9 +230,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
       dropzoneRec.left-boardRec.left-window.scrollX,
       dropzoneRec.top-boardRec.top-window.scrollY);
 
-    this.setDropzoneActive(square.dropIndex, true);
-    square.dropIndex = this.boardState.getDropzone(dropzoneEl).id;
-    this.setDropzoneActive(square.dropIndex, false);
+    square.dropIndex = dropIndex;
+    this.setDropIndexHasTile(square.dropIndex, true);
   }
 
   private setElementCoords(square: SquareModel, x: number, y: number) {

@@ -1,9 +1,10 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, Inject, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService, GameServiceState } from 'src/app/services/game.service';
+import { NavigationService } from 'src/app/services/navigation.service';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
 import { RouteNames } from '../routes';
 
@@ -23,7 +24,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     private gameService: GameService,
     private peerToPeerService: PeerToPeerService,
     private gameHostService: GameHostService,
-    private router: Router,
+    private navigationService: NavigationService,
     @Inject(APP_BASE_HREF) public baseHref: string
   ) { }
 
@@ -38,7 +39,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   }
 
   private gotoGame() {
-    this.router.navigate([RouteNames.GAME + '/' + this.peerToPeerService.getHostId()]);
+    this.navigationService.gotoGame();
   }
 
   ngOnDestroy() {

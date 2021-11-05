@@ -12,15 +12,17 @@ import { GameHostService } from './game-host.service';
 import { GameService } from './game.service';
 import { InvalidSquareFinderService } from './invalid-square-finder.service';
 import { LocalStorageService } from './local-storage.service';
+import { NavigationService } from './navigation.service';
 import { ParamOverrideService } from './param-override.service';
 import { PeerToPeerService } from './peer-to-peer.service';
 
 function getGameService(peer: PeerToPeerService): GameService {
   return new GameService(peer,
     TestBed.inject(InvalidSquareFinderService),
-    TestBed.inject(Router),
     TestBed.inject(BoardAlgorithmsService),
-    TestBed.inject(LocalStorageService));
+    TestBed.inject(LocalStorageService),
+    TestBed.inject(NavigationService),
+  );
 }
 
 describe('GameHostService', () => {
