@@ -36,7 +36,7 @@ export class DictionaryService {
 
   hasWord(word: string): boolean {
     word = word.toUpperCase();
-    logger.info(`hasWord(${word}) = ${this.dict.has(word)}`);
+    logger.debug(`hasWord(${word}) = ${this.dict.has(word)}`);
     return this.dict.has(word);
   }
 }
