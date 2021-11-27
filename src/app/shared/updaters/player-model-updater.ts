@@ -7,8 +7,7 @@ export const playerKeysToUpdate: Array<keyof PlayerModel> = [
   'isSpectator',
   'tilesUsed',
   'nameEncoded',
-  'disconnected',
-  'totalTiles'
+  'disconnected'
 ];
 
 export class PlayerModelUpdater {

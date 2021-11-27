@@ -252,6 +252,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         const sq = res.squaresInPlay[i];
         const newDropIndex = res.movedIds[i];
         if (sq.dropIndex === newDropIndex) continue;
+        this.setDropIndexHasTile(sq.dropIndex, false);
         this.setCoordsBasedOnDropIndex(sq, newDropIndex);
       }
       this.gameService.updateAfterDrop();

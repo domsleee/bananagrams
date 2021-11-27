@@ -108,4 +108,19 @@ describe('GameHostService', () => {
     flushMessages();
     expect(gameService1.state.inGame).withContext('should not be in game').toBe(false);
   })
+
+  it('tile status is correct at game start', () => {
+    expect(gameService1.getPlayerById(peers[0].getId()).totalTiles).toBe(0);
+    expect(gameService1.getPlayerById(peers[1].getId()).totalTiles).toBe(0);
+    expect(gameService2.getPlayerById(peers[0].getId()).totalTiles).toBe(0);
+    expect(gameService2.getPlayerById(peers[1].getId()).totalTiles).toBe(0);
+
+    service.startGame();
+    flushMessages();
+
+    expect(gameService1.getPlayerById(peers[0].getId()).totalTiles).toBe(21);
+    expect(gameService1.getPlayerById(peers[1].getId()).totalTiles).toBe(21);
+    expect(gameService2.getPlayerById(peers[0].getId()).totalTiles).toBe(21);
+    expect(gameService2.getPlayerById(peers[1].getId()).totalTiles).toBe(21);
+  });
 });
