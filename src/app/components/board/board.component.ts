@@ -34,7 +34,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   dropIndexHasTile = new Array<boolean>(NUM_TILE_INDEXES).fill(false);
 
   private readonly clickHander;
-  private squareIdCounter = 500;
   private interactables: Interactable[] = [];
   private subs: Subscription[] = [];
 
@@ -56,7 +55,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
       lastSquares[i].lastClicked = false;
     }
     for (let sq of this.boardState.squares) {
-      this.squareIdCounter = Math.max(this.squareIdCounter, sq.id + 1);
       this.setDropIndexHasTile(sq.dropIndex, true);
     }
   }
@@ -194,10 +192,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private createSquareAndDropInDropzone(letter: Letter): void {
     const count = this.boardState.squares.length;
-    const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
-    if (this.boardState.squares.length === count) {
-      logger.warn(`could not add new square... apparently ${sq.id} already exists.`);
-    }
+    const sq = this.boardState.createNewSquare();
     sq.letter = letter;
 
     this.dropSquareInNearestDropzone(sq);
