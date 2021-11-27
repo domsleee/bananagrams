@@ -24,8 +24,8 @@ const logger = getLogger('game-host');
   providedIn: 'root'
 })
 export class GameHostService {
-  state: GameHostServiceState = GameHostService.getDefaultState();
-  subs: Subscription[] = [];
+  private state: GameHostServiceState = GameHostService.getDefaultState();
+  private subs: Subscription[] = [];
 
   constructor(
     private peerToPeerService: PeerToPeerService,
@@ -113,6 +113,7 @@ export class GameHostService {
 
   async startGame() {
     this.dispose();
+    this.updateSharedState();
     this.state.inGame = true;
     this.peerToPeerService.broadcastAndToSelf({
       command: 'GAME_START'

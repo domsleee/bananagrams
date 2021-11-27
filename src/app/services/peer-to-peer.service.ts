@@ -68,7 +68,7 @@ export class PeerToPeerService {
 
       logger.info(`connecting to ${id}`);
 
-      const conn = this.peer!.connect(id);
+      const conn = this.peer!.connect(id, {reliable: true});
       conn.on('data', (data: IMessage) => {
         this.messageHandler(data);
       });

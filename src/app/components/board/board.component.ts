@@ -29,6 +29,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly bottomDropzones = Array(GRID_SIZE*START_AREA_ROWS).fill(null).map((t, i) => GRID_SIZE*GRID_SIZE + i);
 
   readonly gameServiceState: Readonly<GameServiceState>;
+  readonly gameServiceGameId: number;
   lastSquare?: SquareModel;
   dropIndexHasTile = new Array<boolean>(NUM_TILE_INDEXES).fill(false);
 
@@ -43,6 +44,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {
     this.gameServiceState = gameService.state;
     this.clickHander = this.clickEventListener.bind(this);
+    this.gameServiceGameId = gameService.state.gameId;
   }
 
   ngOnInit() {
@@ -71,6 +73,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
+    // console.log('ngAfterView', this.readonly, this.playerModel, this.gameServiceState)
     if (this.readonly) return;
 
     this.keyboardEventsService.attachListeners();
@@ -175,6 +178,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private unloadQueue() {
+    if (this.gameServiceGameId !== this.gameServiceState.gameId) {
+      logger.warn(`gameid: ${this.gameServiceGameId} does not match game service id ${this.gameServiceState.gameId}`);
+      return;
+    }
+
     const letters = [];
     while (this.gameService.letter$.getLength() > 0) {
       letters.push(this.gameService.letter$.pop());
