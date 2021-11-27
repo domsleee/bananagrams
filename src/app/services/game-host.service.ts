@@ -24,8 +24,8 @@ const logger = getLogger('game-host');
   providedIn: 'root'
 })
 export class GameHostService {
-  state: GameHostServiceState = GameHostService.getDefaultState();
-  subs: Subscription[] = [];
+  private state: GameHostServiceState = GameHostService.getDefaultState();
+  private subs: Subscription[] = [];
 
   constructor(
     private peerToPeerService: PeerToPeerService,
@@ -113,6 +113,7 @@ export class GameHostService {
 
   async startGame() {
     this.dispose();
+    this.updateSharedState(); // client needs to know server state before navigating to the game
     this.state.inGame = true;
     this.peerToPeerService.broadcastAndToSelf({
       command: 'GAME_START'
@@ -229,16 +230,17 @@ export class GameHostService {
       if (this.state.losers.includes(k)) continue;
       tilesUsedByPlayers += this.state.lettersPerPlayer[k].size
     }
+    const gameOver = this.state.winnerId != null || this.state.losers.length === Object.keys(this.state.lettersPerPlayer).length
     return {
       winnerId: this.state.winnerId,
-      canDump: this.canDump,
+      canDump: !gameOver && this.canDump,
       nextPeelWins: this.nextPeelWins,
       tilesUsedByPlayers,
       totalTilesInGame: this.state.totalTilesInGame,
       tilesRemaining: this.state.letters.length,
       totalPeerCount: 1 + this.peerToPeerService.getConnections().length,
       inGame: this.state.inGame,
-      gameOver: this.state.winnerId != null || this.state.losers.length === Object.keys(this.state.lettersPerPlayer).length
+      gameOver
     }
   }
 }

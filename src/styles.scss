@@ -5,6 +5,7 @@ body, html {
 
 .banana {
   background-image: url('/bananagrams/assets/small-banana.png');
+  background-repeat: no-repeat;
   width: 40px;
   height: 28px;
   background-size: contain;

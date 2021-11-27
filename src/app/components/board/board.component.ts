@@ -29,11 +29,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly bottomDropzones = Array(GRID_SIZE*START_AREA_ROWS).fill(null).map((t, i) => GRID_SIZE*GRID_SIZE + i);
 
   readonly gameServiceState: Readonly<GameServiceState>;
+  readonly gameServiceGameId: number;
   lastSquare?: SquareModel;
   dropIndexHasTile = new Array<boolean>(NUM_TILE_INDEXES).fill(false);
 
   private readonly clickHander;
-  private squareIdCounter = 500;
   private interactables: Interactable[] = [];
   private subs: Subscription[] = [];
 
@@ -43,6 +43,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   ) {
     this.gameServiceState = gameService.state;
     this.clickHander = this.clickEventListener.bind(this);
+    this.gameServiceGameId = gameService.state.gameId;
   }
 
   ngOnInit() {
@@ -54,7 +55,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
       lastSquares[i].lastClicked = false;
     }
     for (let sq of this.boardState.squares) {
-      this.squareIdCounter = Math.max(this.squareIdCounter, sq.id + 1);
       this.setDropIndexHasTile(sq.dropIndex, true);
     }
   }
@@ -71,6 +71,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
+    // console.log('ngAfterView', this.readonly, this.playerModel, this.gameServiceState)
     if (this.readonly) return;
 
     this.keyboardEventsService.attachListeners();
@@ -175,6 +176,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   private unloadQueue() {
+    if (this.gameServiceGameId !== this.gameServiceState.gameId) {
+      logger.warn(`gameid: ${this.gameServiceGameId} does not match game service id ${this.gameServiceState.gameId}`);
+      return;
+    }
+
     const letters = [];
     while (this.gameService.letter$.getLength() > 0) {
       letters.push(this.gameService.letter$.pop());
@@ -186,10 +192,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private createSquareAndDropInDropzone(letter: Letter): void {
     const count = this.boardState.squares.length;
-    const sq = this.boardState.getSquareFromId(this.squareIdCounter++);
-    if (this.boardState.squares.length === count) {
-      logger.warn(`could not add new square... apparently ${sq.id} already exists.`);
-    }
+    const sq = this.boardState.createNewSquare();
     sq.letter = letter;
 
     this.dropSquareInNearestDropzone(sq);
@@ -252,6 +255,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         const sq = res.squaresInPlay[i];
         const newDropIndex = res.movedIds[i];
         if (sq.dropIndex === newDropIndex) continue;
+        this.setDropIndexHasTile(sq.dropIndex, false);
         this.setCoordsBasedOnDropIndex(sq, newDropIndex);
       }
       this.gameService.updateAfterDrop();

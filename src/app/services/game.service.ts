@@ -22,6 +22,7 @@ const logger = getLogger('game');
 const MAX_PLAYERS = 8;
 
 export interface GameServiceState extends ISharedState {
+  gameId: number;
   canClaimSuccess: boolean;
   players: Array<PlayerModel>;
   myPlayer: PlayerModel | null;
@@ -44,10 +45,10 @@ export interface ISharedState {
   providedIn: 'root'
 })
 export class GameService {
-  letter$ = new SubscribableQueue<Letter>();
-  gameStart$ = new Subject<boolean>();
-  winner$ = new Subject<void>();
-  loser$ = new Subject<void>();
+  readonly letter$ = new SubscribableQueue<Letter>();
+  readonly gameStart$ = new Subject<boolean>();
+  readonly winner$ = new Subject<void>();
+  readonly loser$ = new Subject<void>();
   subs: Array<Subscription> = [];
   state: GameServiceState = GameService.getInitialState();
 
@@ -97,8 +98,10 @@ export class GameService {
             new PlayerModelUpdater().updatePlayer(player, message.data.state);
           } break;
           case 'GAME_START': {
-            this.letter$ = new SubscribableQueue<Letter>();
+            while (this.letter$.getLength() > 0) this.letter$.pop();
             this.resetLocalState();
+            this.state.gameId++;
+            logger.debug(`START GAME ${this.state.gameId}`)
             this.gameStart$.next(true);
           } break;
           case 'REJOIN_AS_PLAYER': {
@@ -116,12 +119,15 @@ export class GameService {
           } break;
           case 'RECEIVE_LETTERS': {
             const player = this.getPlayerById(message.data.playerId);
-            for (let letter of message.data.letters) {
-              if (message.data.playerId === this.peerToPeerService.getId()) {
+            const isMyPlayer = message.data.playerId === this.peerToPeerService.getId();
+            if (isMyPlayer) {
+              logger.debug('received letters ', message.data.letters);
+              for (let letter of message.data.letters) {
                 this.letter$.add(letter);
               }
             }
             player.totalTiles = message.data.playerTotalTiles;
+            if (isMyPlayer) this.updateAfterDrop();
           } break;
           case 'LOSER': {
             let player = this.getPlayerById(message.data.playerId);
@@ -281,6 +287,7 @@ export class GameService {
 
   private static getInitialState(): GameServiceState {
     return {
+      gameId: 0,
       canDump: true,
       canClaimSuccess: false,
       winnerId: null,
