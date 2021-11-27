@@ -64,6 +64,7 @@ export class BoardContainerComponent implements OnInit, OnDestroy, AfterViewInit
 
   ngOnDestroy() {
     this.destroyAnimation();
+    this.subs.forEach(t => t.unsubscribe());
   }
 
   selectPlayer(player: PlayerModel) {

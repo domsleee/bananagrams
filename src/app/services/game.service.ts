@@ -116,12 +116,15 @@ export class GameService {
           } break;
           case 'RECEIVE_LETTERS': {
             const player = this.getPlayerById(message.data.playerId);
-            for (let letter of message.data.letters) {
-              if (message.data.playerId === this.peerToPeerService.getId()) {
+            const isMyPlayer = message.data.playerId === this.peerToPeerService.getId();
+            if (isMyPlayer) {
+              logger.debug('received letters ', message.data.letters);
+              for (let letter of message.data.letters) {
                 this.letter$.add(letter);
               }
             }
             player.totalTiles = message.data.playerTotalTiles;
+            if (isMyPlayer) this.updateAfterDrop();
           } break;
           case 'LOSER': {
             let player = this.getPlayerById(message.data.playerId);

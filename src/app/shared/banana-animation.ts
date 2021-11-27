@@ -27,6 +27,7 @@ export class BananaAnimation {
   constructor(private ngZone: NgZone) {}
 
   runAnimation(el: HTMLElement) {
+    this.stopAnimation();
     const animationsToAnimate = this.getAnimationsToAnimate();
 
     for (const animation of this.animations) {
