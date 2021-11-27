@@ -113,7 +113,7 @@ export class GameHostService {
 
   async startGame() {
     this.dispose();
-    this.updateSharedState();
+    this.updateSharedState(); // client needs to know server state before navigating to the game
     this.state.inGame = true;
     this.peerToPeerService.broadcastAndToSelf({
       command: 'GAME_START'
