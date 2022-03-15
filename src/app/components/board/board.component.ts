@@ -71,8 +71,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   ngAfterViewInit() {
-    // console.log('ngAfterView', this.readonly, this.playerModel, this.gameServiceState)
-    if (this.readonly) return;
+    // reason it is NOT ok to use `this.readonly` here:
+    // GameHostService.startGame calls updateSharedState and then GAME_START, but these messages are sometimes not in order. 
+    if (this.playerModel.id !== this.gameServiceState.myPlayer.id) return;
 
     this.keyboardEventsService.attachListeners();
 
@@ -120,7 +121,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         const squareEl = event.target as HTMLElement;
         const square = this.boardState.getSquareFromEl(squareEl);
         this.updateLastSquare(square);
-        this.setDropIndexHasTile(square.dropIndex, false);
       }),
 
       interact('.dropzone.droppable').dropzone({
@@ -130,6 +130,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         ondragenter: (event) => {
           const squareEl = event.relatedTarget as HTMLElement;
           const square = this.boardState.getSquareFromEl(squareEl);
+          this.setDropIndexHasTile(square.dropIndex, false);
           const dropzoneEl = event.target;
           const dropIndex = parseInt(dropzoneEl.getAttribute('data-id'));
           if (dropIndex && !this.dropIndexHasTile[dropIndex]) {
@@ -200,24 +201,24 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
 
   private dropSquareInNearestDropzone(sq: SquareModel) {
     const dropInDropzone = () => {
-      const tryDropInDropzone = (i: number): boolean => {
-        if (!this.dropIndexHasTile[i]) {
-          this.setCoordsBasedOnDropIndex(sq, i);
-          return true;
-        }
-        return false;
-      }
-
       for (let i = 0; i < GRID_SIZE*START_AREA_ROWS; ++i) {
-        if (tryDropInDropzone(GRID_SIZE*GRID_SIZE + i)) return;
+        if (this.tryDropInDropzone(sq, GRID_SIZE*GRID_SIZE + i)) return;
       }
 
       for (let i = GRID_SIZE*GRID_SIZE-1; i >= 0; --i) {
-        if (tryDropInDropzone(i)) return;
+        if (this.tryDropInDropzone(sq, i)) return;
       }
     }
     dropInDropzone();
     this.gameService.updateAfterDrop();
+  }
+
+  private tryDropInDropzone(sq: SquareModel, i: number): boolean {
+    if (!this.dropIndexHasTile[i]) {
+      this.setCoordsBasedOnDropIndex(sq, i);
+      return true;
+    }
+    return false;
   }
 
   private setCoordsBasedOnDropIndex(square: SquareModel, dropIndex: number) {
