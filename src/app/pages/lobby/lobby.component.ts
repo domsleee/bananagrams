@@ -46,7 +46,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.subs.forEach(t => t.unsubscribe);
   }
 
-  setName() {
+  setName(event: Event) {
     this.gameService.updatePlayer(this.name);
   }
 

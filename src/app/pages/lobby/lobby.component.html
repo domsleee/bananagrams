@@ -5,9 +5,9 @@
     {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
   </li>
 </ul>
-<input [(ngModel)]="name" type="text" maxlength="32">
+<input [(ngModel)]="name" (keydown.enter)="setName($event)" type="text" maxlength="32">
 <button
-  (click)="setName()"
+  (click)="setName($event)"
   [disabled]="!name || gameServiceState.totalPeerCount === 0 || rejoining"
   >Set name</button>
 <button

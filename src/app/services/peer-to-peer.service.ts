@@ -95,7 +95,7 @@ export class PeerToPeerService {
 
   broadcastAndToSelf(data: MessageData, options?: IBroadcastOptions) {
     const message = this.broadcast(data, options);
-    this.messageSubject.subject.next(message);
+    this.sendMessage(this.getId(), message);
     return message;
   }
 
@@ -230,6 +230,7 @@ export class PeerToPeerService {
   private sendMessage(to: string, message: IMessage) {
     if (!(to in this.connections)) {
       if (to === this.getId()) {
+        logger.debug(`SEND MESSAGE TO self`, message);
         this.messageSubject.subject.next(message);
         return;
       }

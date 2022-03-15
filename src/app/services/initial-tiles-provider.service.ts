@@ -16,7 +16,10 @@ export class InitialTilesProviderService {
     let result = new Array<Letter>();
     const mult = 1 + Math.floor((numPlayers-1)/8);
     for (let [key, value] of letterMap.entries()) {
-      for (let i = 0; i < value*mult; ++i) result.push(key);
+      const amountOfKey = numPlayers != 2
+        ? value * mult
+        : (value * mult) / 2;
+      for (let i = 0; i < amountOfKey; ++i) result.push(key);
     }
     return result;
   }
