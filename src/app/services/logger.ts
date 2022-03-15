@@ -1,5 +1,6 @@
 import * as log from 'loglevel';
 import * as prefix from 'loglevel-plugin-prefix';
+import { BoundedLogQueue } from '../utils/bounded-log-queue';
 
 const TXT_LEVEL: log.LogLevelDesc = 'DEBUG';
 const LOG_LEVEL: log.LogLevelDesc = 'INFO';
@@ -19,7 +20,7 @@ export function getLogger(service: string) {
   return ret;
 }
 
-const allLogs = new Array<string>();
+const allLogs = new BoundedLogQueue(5000);
 const originalFactory = log.methodFactory;
 const logMethods = [
   "trace",
@@ -51,7 +52,7 @@ function attachMethodFactory() {
 }
 
 export function downloadLogs() {
-  downloadText(`${(new Date()).toISOString()}.txt`, allLogs.join('\n'));
+  downloadText(`${(new Date()).toISOString()}.txt`, allLogs.getOrderedArray().join('\n'));
 }
 
 // https://stackoverflow.com/questions/24898044/is-possible-to-save-javascript-variable-as-file
