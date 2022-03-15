@@ -6,7 +6,7 @@ import { GRID_SIZE, Letter, START_AREA_ROWS, TILE_SIZE } from 'src/app/shared/de
 import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
-import { downloadLogs, getLogger } from 'src/app/services/logger';
+import { getLogger } from 'src/app/services/logger';
 import { KeyboardEventsService } from 'src/app/services/keyboard-events.service';
 
 const logger = getLogger('board');
@@ -82,10 +82,6 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
         this.unloadQueue();
       }),
       this.keyboardEventsService.keydownFirstTime.subscribe((key: string) => {
-        if (key == 'd') {
-          downloadLogs();
-          return;
-        }
         this.moveAllSquares(key);
       })
     ]
