@@ -1,1 +1,8 @@
-<router-outlet></router-outlet>
+<div style="max-width: 800px; display: block; margin: auto;">
+  <div style="margin:auto; width: auto; margin-bottom: 20px; margin-top: 10px">
+    <span *ngFor="let letter of myTitle" class="square">{{letter}}</span>
+    <span>v{{version}}</span>
+  </div>
+
+  <router-outlet></router-outlet>
+</div>
