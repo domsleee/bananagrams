@@ -167,7 +167,7 @@ export class GameService {
 
   dispose() {
     this.state = GameService.getInitialState();
-    this.subs.forEach(t => t.unsubscribe);
+    this.subs.forEach(t => t.unsubscribe());
     this.subs = [];
   }
 

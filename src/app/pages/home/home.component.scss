@@ -1,0 +1,10 @@
+@import 'src/variables.scss';
+
+.container {
+  width: $menuWidth;
+  margin: auto;
+
+  button {
+    width: 100%;
+  }
+}

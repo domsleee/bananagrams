@@ -15,7 +15,6 @@ function format(level: string, name: any, timestamp: any) {
 export function getLogger(service: string) {
   const ret = log.getLogger(service);
   ret.setLevel(TXT_LEVEL);
-  console.log(service)
   if (service === 'peer-to-peer.service') ret.setLevel('DEBUG');
   return ret;
 }

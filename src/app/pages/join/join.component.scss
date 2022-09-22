@@ -1,10 +1,13 @@
+@import 'src/variables.scss';
+
 .loader {
-  border: 5px solid #f3f3f3; /* Light grey */
-  border-top: 5px solid #555; /* Blue */
+  border: 15px solid #f3f3f3; /* Light grey */
+  border-top: 15px solid #555; /* Blue */
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 150px;
+  height: 150px;
   animation: spin 1s linear infinite;
+  margin: auto;
 }
 
 @keyframes spin {
@@ -13,5 +16,9 @@
 }
 
 .container {
-  min-width: 300px;
+  width: $menuWidth;
+  margin: auto;
+  button {
+    width: 100%;
+  }
 }

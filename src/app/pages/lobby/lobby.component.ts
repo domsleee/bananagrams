@@ -65,6 +65,10 @@ export class LobbyComponent implements OnInit, OnDestroy {
     this.setIsSpectatorAndGotoGame(true);
   }
 
+  copyJoinLink() {
+    navigator.clipboard.writeText(window.location.href);
+  }
+
   private setIsSpectatorAndGotoGame(isSpectator: boolean) {
     this.gameService.getOrCreateMyPlayer().isSpectator = isSpectator;
     this.gameService.sendPlayerUpdateMessage(this.gameService.getOrCreateMyPlayer());

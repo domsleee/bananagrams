@@ -14,17 +14,17 @@ export class NavigationService {
     private ngZone: NgZone
   ) { }
 
-  wrappedNavigate(commands: any[], extras?: NavigationExtras) {
-    this.ngZone.run(() => {
-      return this.router.navigate(commands, extras);
-    })
-  }
-
   gotoLobby() {
     return this.wrappedNavigate([RouteNames.LOBBY + '/' + this.peerToPeerService.getHostId()]);
   }
 
   gotoGame() {
     return this.wrappedNavigate([RouteNames.GAME + '/' + this.peerToPeerService.getHostId()]);
+  }
+
+  private wrappedNavigate(commands: any[], extras?: NavigationExtras) {
+    this.ngZone.run(() => {
+      return this.router.navigate(commands, extras);
+    })
   }
 }

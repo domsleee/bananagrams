@@ -1,3 +1,5 @@
+@import './src/variables.scss';
+
 .strikethrough {
   text-decoration: line-through;
 }
@@ -25,16 +27,8 @@ div.name-div {
   }
 }
 
-img {
-  display: block;
-  width: 200px;
-  margin: auto;
-}
-
-div.outer-container {
-  display: flex;
-  justify-content: center;
-}
 div.container {
-  display: inline-block;
+  display: block;
+  margin: auto;
+  width: $menuWidth;
 }

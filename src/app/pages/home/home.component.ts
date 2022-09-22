@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService } from 'src/app/services/game.service';
@@ -21,7 +22,8 @@ export class HomeComponent implements OnInit {
     private peerToPeerService: PeerToPeerService,
     private navigationService: NavigationService,
     private activatedRoute: ActivatedRoute,
-    private paramOverrideService: ParamOverrideService
+    private paramOverrideService: ParamOverrideService,
+    @Inject(APP_BASE_HREF) public baseHref: string
   ) { }
 
   ngOnInit(): void {

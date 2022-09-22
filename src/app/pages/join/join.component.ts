@@ -1,5 +1,6 @@
+import { APP_BASE_HREF } from '@angular/common';
 import { ThisReceiver } from '@angular/compiler';
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import Peer from 'peerjs';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
@@ -16,7 +17,8 @@ export class JoinComponent implements OnInit {
   constructor(
     private peerToPeerService: PeerToPeerService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    @Inject(APP_BASE_HREF) public baseHref: string
   ) { }
 
   async ngOnInit() {

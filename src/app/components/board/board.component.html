@@ -15,7 +15,6 @@
           [attr.data-id]="zoneIndex"
         ></div>
         <!-- [class.droppable]="boardState.dropzones[zoneIndex].active" -->
-
       </div>
 
       <div id="startArea">
@@ -27,7 +26,7 @@
           <button class="dump"
             (click)="dump()"
             [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
-          <!-- <div style="font-size:15px;">{{readonlyGameServiceState.tilesUsedByPlayers}} / {{readonlyGameServiceState.totalTilesInGame}} ({{readonlyGameServiceState.tilesRemaining}} remaining)</div> -->
+          <span style="font-size:15px;margin-left:5px;float:right">arrow keys to move your tiles</span>
         </div>
         <div class="dropzone droppable"
           *ngFor="let zoneIndex of bottomDropzones"

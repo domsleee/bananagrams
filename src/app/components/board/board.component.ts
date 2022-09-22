@@ -27,6 +27,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly GRID_SIZE = GRID_SIZE;
   readonly topDropzones = Array(GRID_SIZE*GRID_SIZE).fill(null).map((t, i) => i);
   readonly bottomDropzones = Array(GRID_SIZE*START_AREA_ROWS).fill(null).map((t, i) => GRID_SIZE*GRID_SIZE + i);
+  readonly borderSize = 3;
 
   readonly gameServiceState: Readonly<GameServiceState>;
   readonly gameServiceGameId: number;
@@ -133,7 +134,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
           this.setDropIndexHasTile(square.dropIndex, false);
           const dropzoneEl = event.target;
           const dropIndex = parseInt(dropzoneEl.getAttribute('data-id'));
-          if (dropIndex && !this.dropIndexHasTile[dropIndex]) {
+
+          if (!this.dropIndexHasTile[dropIndex]) {
             square.dropIndex = dropIndex;
             event.target.classList.add('drop-target');
           }
@@ -231,8 +233,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
     const boardRec = boardEl.getBoundingClientRect();
     this.setElementCoords(
       square,
-      dropzoneRec.left-boardRec.left-window.scrollX,
-      dropzoneRec.top-boardRec.top-window.scrollY);
+      dropzoneRec.left-boardRec.left-window.scrollX - this.borderSize,
+      dropzoneRec.top-boardRec.top-window.scrollY - this.borderSize);
 
     square.dropIndex = dropIndex;
     this.setDropIndexHasTile(square.dropIndex, true);

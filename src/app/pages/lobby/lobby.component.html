@@ -1,34 +1,36 @@
-<div class="outer-container">
-  <div class="container">
-    <img src="{{baseHref}}assets/banana.jpeg">
-    <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
-    <ul>
-      <li *ngFor="let player of gameServiceState.players" [class.strikethrough]="player.disconnected">
-        {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
-      </li>
-    </ul>
-    <div class="name-div">
-      <input [(ngModel)]="name" (keydown.enter)="setName($event)" type="text" maxlength="32">
-      <button
-        style="display: inline-block;"
-        class="big-button"
-        (click)="setName($event)"
-        [disabled]="!name || gameServiceState.totalPeerCount === 0 || rejoining"
-        >Set name</button>
-    </div>
+<div class="container">
+  <img class="banana-img" src="{{baseHref}}assets/banana.jpeg">
+  <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
+  <ul>
+    <li *ngFor="let player of gameServiceState.players" [class.strikethrough]="player.disconnected">
+      {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
+    </li>
+  </ul>
+  <div class="name-div">
+    <input [(ngModel)]="name" (keydown.enter)="setName($event)" type="text" maxlength="32">
     <button
-      (click)="rejoin()"
-      class="big-button block-button"
-      [disabled] = "rejoining || isHost  || !gameServiceState.rejoinCandidate"
-    >Rejoin as {{gameServiceState.rejoinCandidate?.name}}?</button>
-    <button
-      (click)="joinAsSpectator()"
-      class="big-button block-button"
-      [disabled] = "isHost || rejoining || !gameServiceState.inGame"
-    >Join as spectator</button>
-    <button
-      class="big-button block-button"
-      [disabled]="!isHost || gameServiceState.myPlayer === null"
-      (click)="startGame()">Start Game</button>
+      style="display: inline-block;"
+      class="big-button"
+      (click)="setName($event)"
+      [disabled]="!name || gameServiceState.totalPeerCount === 0 || rejoining"
+      >Set name</button>
   </div>
+  <button
+    (click)="copyJoinLink()"
+    class="big-button block-button"
+  >Copy join link</button>
+  <button
+    (click)="rejoin()"
+    class="big-button block-button"
+    [disabled] = "rejoining || isHost  || !gameServiceState.rejoinCandidate"
+  >Rejoin as {{gameServiceState.rejoinCandidate?.name}}?</button>
+  <button
+    (click)="joinAsSpectator()"
+    class="big-button block-button"
+    [disabled] = "isHost || rejoining || !gameServiceState.inGame"
+  >Join as spectator</button>
+  <button
+    class="big-button block-button"
+    [disabled]="!isHost || gameServiceState.myPlayer === null"
+    (click)="startGame()">Start game</button>
 </div>
