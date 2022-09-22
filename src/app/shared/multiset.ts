@@ -35,12 +35,12 @@ export class Multiset<T> {
     }
 
     return {
-        next: () => {
-            return {
-                done: counter === arr.length,
-                value: arr[counter++]
-            }
+      next: () => {
+        return {
+          done: counter === arr.length,
+          value: arr[counter++] 
         }
+      }
     }
   }
 }

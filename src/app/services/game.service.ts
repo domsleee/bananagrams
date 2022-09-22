@@ -86,76 +86,76 @@ export class GameService {
       }),
       this.peerToPeerService.getMessageObservable().subscribe((message: IGenericMessage<IResponseData>) => {
         switch(message.data.command) {
-          case 'UPDATE_PLAYER': {
-            let player = this.getPlayerById(message.data.playerId);
-            const isNewPlayer = !player;
-            if (isNewPlayer) {
-              player = new PlayerModel(message.data.playerId);
-              this.state.players.push(player);
-              if (this.localStorageService.localState.previousIds.includes(player.id)
+        case 'UPDATE_PLAYER': {
+          let player = this.getPlayerById(message.data.playerId);
+          const isNewPlayer = !player;
+          if (isNewPlayer) {
+            player = new PlayerModel(message.data.playerId);
+            this.state.players.push(player);
+            if (this.localStorageService.localState.previousIds.includes(player.id)
                   && player.id !== this.peerToPeerService.getId()) {
-                logger.info(`has been ${player.id} before.`);
-                this.state.rejoinCandidate = player;
-              }
+              logger.info(`has been ${player.id} before.`);
+              this.state.rejoinCandidate = player;
             }
-            new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
-          } break;
-          case 'GAME_START': {
-            while (this.letter$.getLength() > 0) this.letter$.pop();
-            this.resetLocalState();
-            this.state.gameId++;
-            logger.debug(`START GAME ${this.state.gameId}`)
-            this.gameStart$.next(true);
-          } break;
-          case 'REJOIN_AS_PLAYER': {
-            logger.info("REJOIN AS PLAYER", message);
-            const player = this.getPlayerById(message.data.toPlayer);
-            if (player) {
-              this.state.players = this.state.players.filter(t => t.id !== message.from);
-              (player as any).id = message.from;
-              player.disconnected = false;
+          }
+          new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
+        } break;
+        case 'GAME_START': {
+          while (this.letter$.getLength() > 0) this.letter$.pop();
+          this.resetLocalState();
+          this.state.gameId++;
+          logger.debug(`START GAME ${this.state.gameId}`)
+          this.gameStart$.next(true);
+        } break;
+        case 'REJOIN_AS_PLAYER': {
+          logger.info("REJOIN AS PLAYER", message);
+          const player = this.getPlayerById(message.data.toPlayer);
+          if (player) {
+            this.state.players = this.state.players.filter(t => t.id !== message.from);
+            (player as any).id = message.from;
+            player.disconnected = false;
 
-              if (player.id === this.peerToPeerService.getId()) {
-                this.state.rejoinCandidate = null;
-              }
+            if (player.id === this.peerToPeerService.getId()) {
+              this.state.rejoinCandidate = null;
             }
-          } break;
-          case 'RECEIVE_LETTERS': {
-            const player = this.getPlayerById(message.data.playerId);
-            const isMyPlayer = message.data.playerId === this.peerToPeerService.getId();
-            if (isMyPlayer) {
-              logger.debug('received letters ', message.data.letters);
-              for (let letter of message.data.letters) {
-                this.letter$.add(letter);
-              }
+          }
+        } break;
+        case 'RECEIVE_LETTERS': {
+          const player = this.getPlayerById(message.data.playerId);
+          const isMyPlayer = message.data.playerId === this.peerToPeerService.getId();
+          if (isMyPlayer) {
+            logger.debug('received letters ', message.data.letters);
+            for (let letter of message.data.letters) {
+              this.letter$.add(letter);
             }
-            player.totalTiles = message.data.playerTotalTiles;
-            if (isMyPlayer) this.updateAfterDrop();
-          } break;
-          case 'LOSER': {
-            let player = this.getPlayerById(message.data.playerId);
-            player.isEliminated = true;
-            if (message.data.playerId === this.peerToPeerService.getId()) {
-              this.loser$.next();
-            }
-          } break;
-          case 'PLAYER_DISCONNECTED': {
-            let player = this.getPlayerById(message.data.playerId);
-            if (player) player.disconnected = true;
-            if (!this.peerToPeerService.getIsConnected() || message.data.playerId === this.peerToPeerService.getHostId()) {
-              const myPlayer = this.getOrCreateMyPlayer();
-              myPlayer.disconnected = true;
-            }
-          } break;
-          case 'WINNER': {
-            this.winner$.next();
-          } break;
-          case 'UPDATE_SHARED_STATE': {
-            Object.assign(this.state, message.data.state);
-          } break;
-          case 'RETURN_TO_LOBBY': {
-            this.location.back();
-          } break;
+          }
+          player.totalTiles = message.data.playerTotalTiles;
+          if (isMyPlayer) this.updateAfterDrop();
+        } break;
+        case 'LOSER': {
+          let player = this.getPlayerById(message.data.playerId);
+          player.isEliminated = true;
+          if (message.data.playerId === this.peerToPeerService.getId()) {
+            this.loser$.next();
+          }
+        } break;
+        case 'PLAYER_DISCONNECTED': {
+          let player = this.getPlayerById(message.data.playerId);
+          if (player) player.disconnected = true;
+          if (!this.peerToPeerService.getIsConnected() || message.data.playerId === this.peerToPeerService.getHostId()) {
+            const myPlayer = this.getOrCreateMyPlayer();
+            myPlayer.disconnected = true;
+          }
+        } break;
+        case 'WINNER': {
+          this.winner$.next();
+        } break;
+        case 'UPDATE_SHARED_STATE': {
+          Object.assign(this.state, message.data.state);
+        } break;
+        case 'RETURN_TO_LOBBY': {
+          this.location.back();
+        } break;
         }
       })
     ];
