@@ -1,0 +1,20 @@
+$tileSize: 60px;
+
+
+.square {
+  display: inline-block;
+  background: orange;
+  margin-right: 5px;
+  border: 2px solid black;
+  font-size: 46px;
+  background-color: rgb(239, 225, 202); /* todo: variable? */
+  width: $tileSize;
+  height: $tileSize;
+  line-height: $tileSize;
+  text-align: center; 
+}
+
+.heading-container {
+  width: 100%;
+  text-align: center;
+}

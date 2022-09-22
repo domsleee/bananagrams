@@ -1,13 +1,34 @@
+@import './src/variables.scss';
+
 .strikethrough {
   text-decoration: line-through;
 }
 
 button {
-  display: block;
   margin-top: 1em;
 }
 
-img {
-  display: block;
+button.block-button {
+  width: 100%;
+}
+
+input {
+  line-height: 2.5em;
   width: 200px;
+  display: flex;
+  flex: 1 1 auto;
+}
+
+div.name-div {
+  display: flex;
+
+  button {
+    margin-top: 0;
+  }
+}
+
+div.container {
+  display: block;
+  margin: auto;
+  width: $menuWidth;
 }

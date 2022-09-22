@@ -1,8 +1,10 @@
-<p>joining...</p>
-<div *ngIf="!error">
-  <div class="loader"></div>
-</div>
-<div *ngIf="error">
-  <p>Error: {{error}}</p>
-  <button (click)="tryConnect()">try again</button>
+<div class="container">
+  <p style="text-align: center; font-size: 26px">Joining game...</p>
+  <div *ngIf="!error">
+    <div class="loader"></div>
+  </div>
+  <div *ngIf="error">
+    <p>{{error}}</p>
+    <button class="big-button" (click)="tryConnect()">Try again</button>
+  </div>
 </div>

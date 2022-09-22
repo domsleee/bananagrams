@@ -1,4 +1,7 @@
-<h1>Bananagrams</h1>
-<button
-  (click)="createGame()"
-  [disabled]="loading">create game</button>
+<div class="container">
+  <button
+    (click)="createGame()"
+    class="big-button"
+    [disabled]="loading">Create game</button>
+  <p>To join a game, open the lobby URL, e.g. <a [href]="url">{{url}}</a></p>
+</div>

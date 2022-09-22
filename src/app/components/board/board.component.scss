@@ -38,6 +38,7 @@ $areaPadding: 5px;
 #board {
   width: $boardSize*($tileSize - 1) + 2*$areaPadding;
   font-size: 0;
+  border: 3px solid black;
 }
 
 #topArea, #startArea {
@@ -85,4 +86,8 @@ $areaPadding: 5px;
 :export {
   boardSize: $boardSize;
   startAreaRows: $startAreaRows;
+}
+
+button.win, button.dump {
+  display: inline-block;
 }

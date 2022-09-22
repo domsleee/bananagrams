@@ -9,6 +9,7 @@ import { LobbyComponent } from './pages/lobby/lobby.component';
 import { GameComponent } from './pages/game/game.component';
 import { LocalComponent } from './pages/local/local.component';
 import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JoinComponent } from './pages/join/join.component';
 import { BoardContainerComponent } from './components/board-container/board-container.component';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
@@ -29,7 +30,8 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    BrowserAnimationsModule
   ],
   providers: [
     {

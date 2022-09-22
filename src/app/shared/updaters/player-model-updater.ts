@@ -12,7 +12,7 @@ export const playerKeysToUpdate: Array<keyof PlayerModel> = [
 
 export class PlayerModelUpdater {
   
-  updatePlayer(player: PlayerModel, newPlayer: Partial<PlayerModel>) {
+  updatePlayer(player: PlayerModel, newPlayer: Partial<PlayerModel>, isNewPlayer = false) {
     const helper = new ModelUpdaterHelper(player);
 
     if ('nameEncoded' in newPlayer && player.nameEncoded !== newPlayer.nameEncoded) {
@@ -23,6 +23,7 @@ export class PlayerModelUpdater {
     for (let key of playerKeysToUpdate) {
       helper.updateByAssignment(newPlayer, key);
     }
+    if (isNewPlayer) helper.updateByAssignment(newPlayer, 'totalTiles');
 
     new BoardUpdater().updateBoard(player.boardState, newPlayer.boardState);
   }

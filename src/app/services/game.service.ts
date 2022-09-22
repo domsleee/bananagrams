@@ -17,6 +17,7 @@ import { BoardAlgorithmsService, Direction, directions } from './board-algorithm
 import { LocalStorageService } from './local-storage.service';
 import { getLogger } from './logger';
 import { NavigationService } from './navigation.service';
+import { Location } from '@angular/common';
 
 const logger = getLogger('game');
 const MAX_PLAYERS = 8;
@@ -57,7 +58,8 @@ export class GameService {
     private invalidSquareFinderService: InvalidSquareFinderService,
     private boardAlgorithmsService: BoardAlgorithmsService,
     private localStorageService: LocalStorageService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    private location: Location
   ) { }
 
   initFromPeerToPeer() {
@@ -86,7 +88,8 @@ export class GameService {
         switch(message.data.command) {
           case 'UPDATE_PLAYER': {
             let player = this.getPlayerById(message.data.playerId);
-            if (!player) {
+            const isNewPlayer = !player;
+            if (isNewPlayer) {
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
               if (this.localStorageService.localState.previousIds.includes(player.id)
@@ -95,7 +98,7 @@ export class GameService {
                 this.state.rejoinCandidate = player;
               }
             }
-            new PlayerModelUpdater().updatePlayer(player, message.data.state);
+            new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
           } break;
           case 'GAME_START': {
             while (this.letter$.getLength() > 0) this.letter$.pop();
@@ -151,7 +154,7 @@ export class GameService {
             Object.assign(this.state, message.data.state);
           } break;
           case 'RETURN_TO_LOBBY': {
-            this.navigationService.gotoLobby();
+            this.location.back();
           } break;
         }
       })
@@ -164,7 +167,7 @@ export class GameService {
 
   dispose() {
     this.state = GameService.getInitialState();
-    this.subs.forEach(t => t.unsubscribe);
+    this.subs.forEach(t => t.unsubscribe());
     this.subs = [];
   }
 
@@ -213,12 +216,7 @@ export class GameService {
   }
 
   sendPlayerUpdateMessage(player: PlayerModel, to: string = null) {
-    let res: Partial<PlayerModel> = {};
-    for (const key of playerKeysToUpdate) {
-      res[key as any] = player[key];
-    }
-    res.boardState = player.boardState;
-
+    let res: Partial<PlayerModel> = {...player};
     const message: MessageData = {
       command: 'UPDATE_PLAYER',
       state: res,

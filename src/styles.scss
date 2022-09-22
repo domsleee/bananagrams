@@ -16,3 +16,15 @@ body, html {
   left: calc(50% - 14px);
   z-index: 500000;
 }
+
+img.banana-img {
+  display: block;
+  width: 200px;
+  margin: auto;
+}
+
+
+button.big-button {
+  display: block;
+  line-height: 2.5em;
+}
