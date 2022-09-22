@@ -26,7 +26,7 @@
           <button class="dump"
             (click)="dump()"
             [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
-          <span style="font-size:15px;margin-left:5px;float:right">arrow keys to move your tiles</span>
+          <span style="font-size:15px;margin-left:5px;float:right">use arrow keys to move your tiles</span>
         </div>
         <div class="dropzone droppable"
           *ngFor="let zoneIndex of bottomDropzones"
