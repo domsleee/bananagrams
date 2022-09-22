@@ -46,62 +46,62 @@ export class GameHostService {
       }),
       this.peerToPeerService.getMessageObservable().subscribe((message: IGenericMessage<IRequestData>) => {
         switch(message.data.command) {
-        case 'DUMP_LETTER': {
-          const playerLetterSet = this.state.lettersPerPlayer[message.from];
-          playerLetterSet.delete(message.data.letter);
-          let lettersToSend = [message.data.letter];
-          if (this.canDump) {
-            lettersToSend = this.takeLetters(3);
-            this.state.letters.push(message.data.letter);
-          }
-          this.sendPlayerLetters(message.from, lettersToSend);
-          this.updateSharedState();
-        } break;
-        case 'CLAIM_SUCCESS': {
-          const playerLetterSet = this.state.lettersPerPlayer[message.from];
+          case 'DUMP_LETTER': {
+            const playerLetterSet = this.state.lettersPerPlayer[message.from];
+            playerLetterSet.delete(message.data.letter);
+            let lettersToSend = [message.data.letter];
+            if (this.canDump) {
+              lettersToSend = this.takeLetters(3);
+              this.state.letters.push(message.data.letter);
+            }
+            this.sendPlayerLetters(message.from, lettersToSend);
+            this.updateSharedState();
+          } break;
+          case 'CLAIM_SUCCESS': {
+            const playerLetterSet = this.state.lettersPerPlayer[message.from];
   
-          // the player received a letter, ignore the message
-          if (playerLetterSet.size !== message.data.numLetters) {
-            logger.warn(`CLAIM_SUCCESS: host suggests ${playerLetterSet.size}, message has ${message.data.numLetters}`);
-            break;
-          }
+            // the player received a letter, ignore the message
+            if (playerLetterSet.size !== message.data.numLetters) {
+              logger.warn(`CLAIM_SUCCESS: host suggests ${playerLetterSet.size}, message has ${message.data.numLetters}`);
+              break;
+            }
   
-          if (this.nextPeelWins) {
-            if (message.data.boardValid) {
-              if (!this.state.winnerId) {
-                this.state.winnerId = message.from;
-                this.updateSharedState();
-                this.peerToPeerService.broadcastAndToSelf({
-                  command: 'WINNER'
-                });
-              }
+            if (this.nextPeelWins) {
+              if (message.data.boardValid) {
+                if (!this.state.winnerId) {
+                  this.state.winnerId = message.from;
+                  this.updateSharedState();
+                  this.peerToPeerService.broadcastAndToSelf({
+                    command: 'WINNER'
+                  });
+                }
 
+              }
+              else {
+                this.state.losers.push(message.from);
+                this.peerToPeerService.broadcastAndToSelf({
+                  command: 'LOSER',
+                  playerId: message.from
+                });
+  
+                this.addLetters(playerLetterSet);
+              }
             }
             else {
-              this.state.losers.push(message.from);
-              this.peerToPeerService.broadcastAndToSelf({
-                command: 'LOSER',
-                playerId: message.from
-              });
-  
-              this.addLetters(playerLetterSet);
+              this.giveEveryPlayerNLetters(1);
             }
-          }
-          else {
-            this.giveEveryPlayerNLetters(1);
-          }
-          this.updateSharedState();
-        } break;
-        case 'REQUEST_ALL_STATE': {
-          for (let player of this.gameService.state.players) {
-            this.gameService.sendPlayerUpdateMessage(player, message.from);
-          }
-          this.updateSharedState();
-        } break;
-        case 'REJOIN_AS_PLAYER': {
-          this.state.lettersPerPlayer[message.from] = this.state.lettersPerPlayer[message.data.toPlayer] ?? new Multiset();
-          this.state.lettersPerPlayer[message.data.toPlayer] = new Multiset();
-        } break;
+            this.updateSharedState();
+          } break;
+          case 'REQUEST_ALL_STATE': {
+            for (let player of this.gameService.state.players) {
+              this.gameService.sendPlayerUpdateMessage(player, message.from);
+            }
+            this.updateSharedState();
+          } break;
+          case 'REJOIN_AS_PLAYER': {
+            this.state.lettersPerPlayer[message.from] = this.state.lettersPerPlayer[message.data.toPlayer] ?? new Multiset();
+            this.state.lettersPerPlayer[message.data.toPlayer] = new Multiset();
+          } break;
         }
       })
     ];
