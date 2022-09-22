@@ -118,11 +118,11 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
           }
         }
       })
-        .on('down', (event) => {
-          const squareEl = event.target as HTMLElement;
-          const square = this.boardState.getSquareFromEl(squareEl);
-          this.updateLastSquare(square);
-        }),
+      .on('down', (event) => {
+        const squareEl = event.target as HTMLElement;
+        const square = this.boardState.getSquareFromEl(squareEl);
+        this.updateLastSquare(square);
+      }),
 
       interact('.dropzone.droppable').dropzone({
         // Require a % element overlap for a drop to be possible
