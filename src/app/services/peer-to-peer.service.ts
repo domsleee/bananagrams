@@ -8,7 +8,7 @@ import { getLogger } from './logger';
 
 const logger = getLogger('peer-to-peer.service');
 const TIMEOUT_MS = 5000;
-const HEROKU_HOST = 'heroku-chess-123.herokuapp.com';
+const PEERJS_HOST = null;//'heroku-chess-123.herokuapp.com';
 export const DEFAULT_ID = 'default';
 
 @Injectable({
@@ -138,11 +138,16 @@ export class PeerToPeerService {
         key: 'peerjs'
       };
     };
-    return {
-      host: HEROKU_HOST,
-      port: 443,
-      secure: true
-    };
+    if (PEERJS_HOST) {
+      return {
+        host: PEERJS_HOST,
+        port: 443,
+        secure: true
+      };
+    } else {
+      return {};
+    }
+    
   }
 
   private connectToPeerServer() {
