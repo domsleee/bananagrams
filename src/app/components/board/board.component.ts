@@ -27,7 +27,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   readonly GRID_SIZE = GRID_SIZE;
   readonly topDropzones = Array(GRID_SIZE*GRID_SIZE).fill(null).map((t, i) => i);
   readonly bottomDropzones = Array(GRID_SIZE*START_AREA_ROWS).fill(null).map((t, i) => GRID_SIZE*GRID_SIZE + i);
-  readonly borderSize = 3;
+  readonly borderSize = 3; // todo: import from scss
 
   readonly gameServiceState: Readonly<GameServiceState>;
   readonly gameServiceGameId: number;
