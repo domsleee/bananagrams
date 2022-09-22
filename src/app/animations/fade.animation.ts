@@ -1,19 +1,32 @@
-import { trigger, animate, transition, style, query, group } from '@angular/animations';
+import { trigger, animate, transition, style, query, group, keyframes, sequence } from '@angular/animations';
 
 export const fadeAnimation =
+  trigger('fadeAnimation', [
+    transition( '* => *', [
+      query(':enter', [
+        style({ opacity: 0 }),
+      ]),
 
-trigger('fadeAnimation', [
-  transition( '* => *', [
-    query(':enter', [
+      query(':leave', [
+        sequence([
+          animate('0.1s', style({opacity: 0})),
+          style({display: 'none', position: 'absolute'})
+        ])
+      ], { optional: true }),
+
+      query(':enter', [
+        animate('0.1s 0.1s', style({ opacity: 1 }))
+      ])
+    ])
+  ]);
+
+export const myInsertRemoveTrigger =
+  trigger('myInsertRemoveTrigger', [
+    transition(':leave', [
+      animate('200ms', style({ opacity: 0, fontSize: 0 }))
+    ]),
+    transition(':enter', [
       style({ opacity: 0 }),
-    ], { optional: true }),
-
-    query(':leave', [
-      style({ display: 'none' }),
-    ], { optional: true }),
-
-    query(':enter', [
-      animate('0.1s', style({ opacity: 1 }))
-    ], { optional: true })
-  ])
-]);
+      animate('200ms', style({ opacity: 1 })),
+    ]),
+  ]);

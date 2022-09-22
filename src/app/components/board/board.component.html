@@ -2,6 +2,7 @@
   <div id="board" style="margin: auto; position: relative">
     <div class="dropzoneHelper">
       <div *ngFor="let square of boardState.squares"
+        @myInsertRemoveTrigger
         class="square"
         [class.draggable]="!readonly"
         [class.last-clicked]="square.lastClicked"

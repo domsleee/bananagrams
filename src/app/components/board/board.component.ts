@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { getLogger } from 'src/app/services/logger';
 import { KeyboardEventsService } from 'src/app/services/keyboard-events.service';
+import { fadeAnimation, myInsertRemoveTrigger } from 'src/app/animations/fade.animation';
 
 const logger = getLogger('board');
 
@@ -17,7 +18,8 @@ const NUM_TILE_INDEXES = (GRID_SIZE * (START_AREA_ROWS+GRID_SIZE));
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.scss'],
-  providers: [KeyboardEventsService]
+  providers: [KeyboardEventsService],
+  animations: [myInsertRemoveTrigger]
 })
 export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   @Input() playerModel: PlayerModel;
