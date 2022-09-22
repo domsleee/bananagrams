@@ -3,11 +3,38 @@
 }
 
 button {
-  display: block;
   margin-top: 1em;
+}
+
+button.block-button {
+  width: 100%;
+}
+
+input {
+  line-height: 2em;
+  width: 200px;
+  display: flex;
+  flex: 1 1 auto;
+}
+
+div.name-div {
+  display: flex;
+
+  button {
+    margin-top: 0;
+  }
 }
 
 img {
   display: block;
   width: 200px;
+  margin: auto;
+}
+
+div.outer-container {
+  display: flex;
+  justify-content: center;
+}
+div.container {
+  display: inline-block;
 }

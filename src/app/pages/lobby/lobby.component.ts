@@ -56,13 +56,18 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   rejoin() {
     this.rejoining = true;
-    this.gameService.rejoinAsPlayer(this.gameServiceState.rejoinCandidate);
     setTimeout(() => this.rejoining = false, 500);
-    if (this.gameServiceState.inGame) this.gotoGame();
+    this.gameService.rejoinAsPlayer(this.gameServiceState.rejoinCandidate);
+    this.setIsSpectatorAndGotoGame(false);
   }
 
   joinAsSpectator() {
-    this.gameService.getOrCreateMyPlayer().isSpectator = true;
-    this.gotoGame();
+    this.setIsSpectatorAndGotoGame(true);
+  }
+
+  private setIsSpectatorAndGotoGame(isSpectator: boolean) {
+    this.gameService.getOrCreateMyPlayer().isSpectator = isSpectator;
+    this.gameService.sendPlayerUpdateMessage(this.gameService.getOrCreateMyPlayer());
+    if (this.gameServiceState.inGame) this.gotoGame();
   }
 }

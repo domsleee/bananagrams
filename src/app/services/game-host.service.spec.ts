@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -22,6 +23,7 @@ function getGameService(peer: PeerToPeerService): GameService {
     TestBed.inject(BoardAlgorithmsService),
     TestBed.inject(LocalStorageService),
     TestBed.inject(NavigationService),
+    TestBed.inject(Location),
   );
 }
 

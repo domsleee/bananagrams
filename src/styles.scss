@@ -16,3 +16,9 @@ body, html {
   left: calc(50% - 14px);
   z-index: 500000;
 }
+
+
+button.big-button {
+  display: block;
+  line-height: 2em;
+}

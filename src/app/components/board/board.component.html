@@ -26,7 +26,7 @@
             [disabled]="!gameServiceState.canClaimSuccess || readonly">{{gameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
           <button class="dump"
             (click)="dump()"
-            [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated">dump</button>
+            [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
           <!-- <div style="font-size:15px;">{{readonlyGameServiceState.tilesUsedByPlayers}} / {{readonlyGameServiceState.totalTilesInGame}} ({{readonlyGameServiceState.tilesRemaining}} remaining)</div> -->
         </div>
         <div class="dropzone droppable"

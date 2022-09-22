@@ -1,8 +1,10 @@
-<div style="max-width: 800px; display: block; margin: auto;">
-  <div style="margin:auto; width: auto; margin-bottom: 20px; margin-top: 10px">
-    <span *ngFor="let letter of myTitle" class="square">{{letter}}</span>
-    <span>v{{version}}</span>
+<div style="max-width: 800px; display: block; margin: auto; position: relative" [@fadeAnimation]="getRouterOutletState(o)">
+  <div class="heading-container">
+    <div style="margin:auto; width: auto; margin-bottom: 20px; margin-top: 10px">
+      <span *ngFor="let letter of myTitle" class="square">{{letter}}</span>
+      <a [href]="link">v{{version}}</a>
+    </div>
   </div>
 
-  <router-outlet></router-outlet>
+  <router-outlet #o="outlet"></router-outlet>
 </div>

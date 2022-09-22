@@ -13,6 +13,7 @@ import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
 })
 export class HomeComponent implements OnInit {
   loading = false;
+  url = `${window.location.href}join/00000`;
 
   constructor(
     private gameHostService: GameHostService,

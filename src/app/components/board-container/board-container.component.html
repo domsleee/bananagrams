@@ -4,13 +4,15 @@
       (click)="selectPlayer(player)"
       [class.disconnected]="player.disconnected"
       [class.active]="activePlayer?.id === player.id">
-        {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}<br />
+        {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}{{player.isSpectator ? '(S)' : ''}}<br />
         <p *ngIf="!player.isEliminated">{{player.tilesUsed}} / {{player.totalTiles}}</p>
         <p *ngIf="player.isEliminated">:(</p>
       </button>
     <p *ngIf="winner">{{winner.name}} wins!</p>
     <button
-      *ngIf="isHost && gameServiceState.gameOver"
+      [disabled]="!isHost"
+      class="big-button"
+      style="margin-top:50px"
       (click)="returnToLobby()">Return to lobby</button>
   </div>
 
@@ -21,7 +23,7 @@
     <app-board
       *ngIf="player.id === activePlayer?.id"
       [playerModel]="player"
-      [readonly]="player.id !== myId || gameServiceState.winnerId !== null || player.isEliminated || player.disconnected"
+      [readonly]="player.id !== myId || gameServiceState.winnerId !== null || player.isEliminated || player.disconnected || player.isSpectator"
     ></app-board>
   </div>
 
