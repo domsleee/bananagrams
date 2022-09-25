@@ -20,6 +20,17 @@ $tileSize: 60px;
   padding-bottom: 15px;
 }
 
+@media only screen and (max-width: 480px) {
+  .square {
+    font-size: 32px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 2px;
+    border: 1px solid black;
+  }
+}
+
 :host ::ng-deep router-outlet + * {
   position:absolute;
   left:0;

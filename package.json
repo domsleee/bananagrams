@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "deploy": "ng deploy --cname=bgrams.app"
   },
   "private": true,
   "dependencies": {

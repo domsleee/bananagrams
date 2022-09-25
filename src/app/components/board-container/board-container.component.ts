@@ -22,6 +22,7 @@ export class BoardContainerComponent implements OnInit, OnDestroy, AfterViewInit
   hostId: string;
   subs: Subscription[];
   isHost = false;
+  isMobile = false; // wip
 
   constructor(
     private gameService: GameService,

@@ -1,10 +1,12 @@
+@import 'src/variables.scss';
+
 /* You can add global styles to this file, and also import other style files */
 body, html {
   font-family: helvetica, sans-serif;
 }
 
 .banana {
-  background-image: url('/bananagrams/assets/small-banana.png');
+  background-image: url('/assets/small-banana.png');
   background-repeat: no-repeat;
   width: 40px;
   height: 28px;
@@ -27,4 +29,10 @@ img.banana-img {
 button.big-button {
   display: block;
   line-height: 2.5em;
+}
+
+.container {
+  width: $menuWidth;
+  max-width: 100%;
+  margin: auto;
 }

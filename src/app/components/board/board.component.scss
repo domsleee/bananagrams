@@ -1,5 +1,5 @@
-$tileSize: 25px;
-$boardSize: 22;
+$tileSize: 25px; // todo: sync with TILE_SIZE
+$boardSize: 22;  // todo: sync with GRID_SIZE
 $startAreaRows: 2;
 $areaPadding: 5px;
 
@@ -10,7 +10,8 @@ $areaPadding: 5px;
   position: absolute;
   z-index: 500;
   box-sizing: border-box;
-  
+  user-select: none;
+
   width: $tileSize;
   height: $tileSize;
   line-height: $tileSize;

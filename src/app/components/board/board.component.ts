@@ -92,33 +92,29 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
 
     this.interactables = [
       interact('.draggable').draggable({
-        listeners: {
-          start: (event) => {
-          },
-          end: (event) => {
-            const squareEl = event.target as HTMLElement;
-            const square = this.boardState.getSquareFromEl(squareEl);
-            if (this.dropIndexHasTile[square.dropIndex]) {
-              logger.info('unlikely event - an incoming square from another peel has taken the square the tile was being dropped on');
-              this.dropSquareInNearestDropzone(square);
-            } else {
-              this.setCoordsBasedOnDropIndex(square, square.dropIndex);
-            }
-            this.gameService.updateAfterDrop();
-          },
-          move: (event) => {
-            const square = this.boardState.getSquareFromEl(event.target);
-
-            const boardEl = document.getElementById('board');
-            const boardRec = boardEl.getBoundingClientRect();
-            const calcX = event.clientX - boardRec.left - (TILE_SIZE/2);
-            const calcY = event.clientY - boardRec.top - (TILE_SIZE/2);
-            //console.log(event.target.style);
-            //console.log('square,event', square.x, calcX, event.target.style.width, 'a', event);
-
-            this.setElementCoords(square, calcX, calcY);
+        onend: (event) => {
+          const squareEl = event.target as HTMLElement;
+          const square = this.boardState.getSquareFromEl(squareEl);
+          if (this.dropIndexHasTile[square.dropIndex]) {
+            logger.info('unlikely event - an incoming square from another peel has taken the square the tile was being dropped on');
+            this.dropSquareInNearestDropzone(square);
+          } else {
+            this.setCoordsBasedOnDropIndex(square, square.dropIndex);
           }
-        }
+          this.gameService.updateAfterDrop();
+        },
+        onmove: (event) => {
+          const square = this.boardState.getSquareFromEl(event.target);
+
+          const boardEl = document.getElementById('board');
+          const boardRec = boardEl.getBoundingClientRect();
+          const calcX = event.clientX - boardRec.left - (TILE_SIZE/2);
+          const calcY = event.clientY - boardRec.top - (TILE_SIZE/2);
+          //console.log(event.target.style);
+          //console.log('square,event', square.x, calcX, square.y, calcY, event.target.style.width, 'a', event);
+
+          this.setElementCoords(square, calcX, calcY);
+        },
       })
       .on('down', (event) => {
         const squareEl = event.target as HTMLElement;
