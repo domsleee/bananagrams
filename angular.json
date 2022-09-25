@@ -24,7 +24,7 @@
               "peerjs",
               "rtcpeerconnection-shim"
             ],
-            "outputPath": "dist/bananagrams",
+            "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -41,7 +41,7 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/bananagrams/",
+              "baseHref": "/",
               "budgets": [
                 {
                   "type": "initial",
@@ -63,7 +63,7 @@
               "outputHashing": "all"
             },
             "development": {
-              "baseHref": "/bananagrams/",
+              "baseHref": "/",
               "buildOptimizer": false,
               "optimization": false,
               "vendorChunk": true,
@@ -126,7 +126,6 @@
       }
     }
   },
-  "defaultProject": "bananagrams",
   "cli": {
     "defaultCollection": "@angular-eslint/schematics"
   }

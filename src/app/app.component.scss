@@ -17,4 +17,12 @@ $tileSize: 60px;
 .heading-container {
   width: 100%;
   text-align: center;
+  padding-bottom: 15px;
+}
+
+:host ::ng-deep router-outlet + * {
+  position:absolute;
+  left:0;
+  top:0;
+  width: 100%;
 }

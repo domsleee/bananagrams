@@ -16,9 +16,9 @@ The URL can be used to inject parameters.
 
 For example, to setup a multiplayer game with four tiles (AAAA), and each player starting with two tiles:
 
-http://localhost:4200/bananagrams/?tiles=AAAA&numTiles=2
+http://localhost:4200/?tiles=AAAA&numTiles=2
 
 To setup a local game (single player), similar parameters can be used:
 
-http://localhost:4200/bananagrams/local?tiles=AA&numTiles=1
+http://localhost:4200/local?tiles=AA&numTiles=1
 
