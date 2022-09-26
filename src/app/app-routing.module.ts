@@ -14,6 +14,7 @@ const routes: Routes = [
   {path: RouteNames.JOIN + '/:id', component: JoinComponent},
   {path: RouteNames.LOBBY + '/:id', component: LobbyComponent, canActivate: [IsConnectedGuard]},
   {path: RouteNames.GAME + '/:id', component: GameComponent, canActivate: [IsConnectedGuard]},
+  {path: '**', redirectTo: RouteNames.HOME}
 ];
 
 @NgModule({

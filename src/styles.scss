@@ -23,8 +23,8 @@ img.banana-img {
   display: block;
   width: 200px;
   margin: auto;
+  border-radius: var(--border-radius);
 }
-
 
 button.big-button {
   display: block;
@@ -35,4 +35,29 @@ button.big-button {
   width: $menuWidth;
   max-width: 100%;
   margin: auto;
+}
+
+html {
+  --text-color: black;
+  --bg-color: white;
+  --link-color: hsl(206,100%,40%);
+  --border-radius: 0px;
+}
+.dark {
+  --text-color: hsla(0,0%,100%,.7);
+  --bg-color: #323437;
+  --link-color: lightblue;
+  --border-radius: 20px;
+}
+
+html {
+  background: var(--bg-color);
+}
+
+a {
+  color: var(--link-color);
+}
+
+p {
+  color: var(--text-color);
 }
