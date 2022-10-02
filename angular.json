@@ -121,7 +121,9 @@
         },
         "deploy": {
           "builder": "angular-cli-ghpages:deploy",
-          "options": {}
+          "options": {
+            "cname": "bgrams.com"
+          }
         }
       }
     }

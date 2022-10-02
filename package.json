@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "postinstall": "patch-package",
-    "deploy": "ng deploy --cname=bgrams.app"
+    "deploy": "ng deploy"
   },
   "private": true,
   "dependencies": {
