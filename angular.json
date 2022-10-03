@@ -41,6 +41,9 @@
           },
           "configurations": {
             "production": {
+              "optimization": true,
+              "sourceMap": true,
+              "namedChunks": true,
               "baseHref": "/",
               "budgets": [
                 {

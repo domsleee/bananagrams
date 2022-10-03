@@ -1,7 +1,11 @@
 <div class="container">
-  <button
-    (click)="createGame()"
-    class="big-button"
-    [disabled]="loading">Create game</button>
+    <button
+      mat-raised-button
+      class="block-button"
+      (click)="createGame()"
+      [disabled]="loading">
+      {{loading ? 'Creating...' : 'Create game'}}</button>
+
   <p>To join a game, open the lobby URL, e.g. <a [href]="url">{{url}}</a></p>
+
 </div>

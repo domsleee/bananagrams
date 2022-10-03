@@ -19,6 +19,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   isHost: boolean;
   subs: Subscription[];
   rejoining = false;
+  copied = false;
 
   constructor(
     private gameService: GameService,
@@ -67,6 +68,8 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   copyJoinLink() {
     navigator.clipboard.writeText(window.location.href);
+    this.copied = true;
+    setTimeout(() => this.copied = false, 2 * 1000);
   }
 
   private setIsSpectatorAndGotoGame(isSpectator: boolean) {

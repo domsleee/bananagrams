@@ -26,6 +26,7 @@
             [disabled]="!gameServiceState.canClaimSuccess || readonly">{{gameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
           <button class="dump"
             (click)="dump()"
+            color="primary"
             [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
           <span style="font-size:15px;margin-left:5px;float:right">use arrow keys to move your tiles</span>
         </div>

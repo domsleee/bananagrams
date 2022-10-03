@@ -1,16 +1,20 @@
 <div style="display:flex;">
   <div *ngIf="!isMobile">
-    <button *ngFor="let player of gameServiceState.players"
+    <button 
+      *ngFor="let player of gameServiceState.players"
+      mat-button
       (click)="selectPlayer(player)"
       [class.disconnected]="player.disconnected"
       [class.active]="activePlayer?.id === player.id"
       class="playerBox">
-        {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}{{player.isSpectator ? '(S)' : ''}}<br />
+        {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === myId ? '(you)' : ''}}{{player.isSpectator ? '(S)' : ''}}
         <p *ngIf="!player.isEliminated">{{player.tilesUsed}} / {{player.totalTiles}}</p>
         <p *ngIf="player.isEliminated">:(</p>
       </button>
     <p *ngIf="winner">{{winner.name}} wins!</p>
     <button
+      mat-stroked-button
+      color="primary"
       [disabled]="!isHost"
       class="big-button"
       style="margin-top:50px"

@@ -1,6 +1,6 @@
 {
   "name": "bananagrams",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
@@ -9,15 +9,18 @@
     "test": "ng test",
     "lint": "ng lint",
     "postinstall": "patch-package",
+    "sourcemap": "source-map-explorer dist/**/*.js",
     "deploy": "ng deploy"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.2.10",
+    "@angular/cdk": "^12.2.13",
     "@angular/common": "~12.2.10",
     "@angular/compiler": "~12.2.10",
     "@angular/core": "~12.2.10",
     "@angular/forms": "~12.2.10",
+    "@angular/material": "^12.2.13",
     "@angular/platform-browser": "~12.2.10",
     "@angular/platform-browser-dynamic": "~12.2.10",
     "@angular/router": "~12.2.10",

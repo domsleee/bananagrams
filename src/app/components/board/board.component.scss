@@ -36,12 +36,17 @@ $areaPadding: 5px;
   background: red;
 }
 
+.square.destroyed {
+  pointer-events: none;
+}
+
 #board {
   width: $boardSize*($tileSize - 1) + 2*$areaPadding;
   font-size: 0;
   border: 3px solid black;
   background: black;
 }
+
 
 #topArea, #startArea {
   padding: $areaPadding;
@@ -54,6 +59,14 @@ $areaPadding: 5px;
 #startArea {
   background-color: grey;
   margin-top: 0px;
+    
+  .mat-button-base {
+    padding: 0;
+    span {
+      line-height: 1.2em!important;
+      background: red!important;
+    }
+  }
 }
 
 .dropzoneHelper {

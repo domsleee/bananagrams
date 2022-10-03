@@ -91,9 +91,10 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
     ]
 
     this.interactables = [
-      interact('.draggable').draggable({
+      interact('.draggable:not(.destroyed)').draggable({
         onend: (event) => {
           const squareEl = event.target as HTMLElement;
+          if (squareEl.className.includes('ng-animating')) return;
           const square = this.boardState.getSquareFromEl(squareEl);
           if (this.dropIndexHasTile[square.dropIndex]) {
             logger.info('unlikely event - an incoming square from another peel has taken the square the tile was being dropped on');
@@ -104,6 +105,7 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
           this.gameService.updateAfterDrop();
         },
         onmove: (event) => {
+          if (event.target.className.includes('ng-animating')) return;
           const square = this.boardState.getSquareFromEl(event.target);
 
           const boardEl = document.getElementById('board');
@@ -159,6 +161,8 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
   dump() {
     if (!this.lastSquare) return;
     const sq = this.lastSquare;
+    const squareEl = document.querySelector(`.square[data-id='${sq.id}']`) as HTMLElement;
+    squareEl.classList.add('destroyed');
     this.setDropIndexHasTile(sq.dropIndex, false);
     this.gameService.dump(sq);
     this.updateLastSquare(null);
@@ -226,6 +230,9 @@ export class BoardComponent implements AfterViewInit, OnDestroy, OnInit {
       logger.warn('dropping square on dropzone that already has a tile???');
     }
     const dropzoneEl = document.querySelector(`.dropzone[data-id='${dropIndex}']`) as HTMLElement;
+    if (dropzoneEl === null) {
+      debugger;
+    }
     const dropzoneRec = interact.getElementRect(dropzoneEl);
     const boardEl = document.getElementById('board');
     const boardRec = boardEl.getBoundingClientRect();

@@ -1,6 +1,3 @@
-.active {
-  background: orange;
-}
 
 p {
   margin: 0;
@@ -16,6 +13,17 @@ button {
   color: grey;
 }
 
+.playerBox {
+  padding: 0px;
+  line-height: 1.2em;
+  background: rgba(255,255,255,0.2);
+}
+.playerBox.active {
+  background: orange;
+}
+
 .playerBox p {
   color: black;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
