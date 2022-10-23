@@ -92,13 +92,9 @@ export class GameService {
             if (isNewPlayer) {
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
-              if (this.localStorageService.localState.previousIds.includes(player.id)
-                  && player.id !== this.peerToPeerService.getId()) {
-                logger.info(`has been ${player.id} before.`);
-                this.state.rejoinCandidate = player;
-              }
             }
             new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
+            this.checkRejoinCandidate(player);
           } break;
           case 'GAME_START': {
             while (this.letter$.getLength() > 0) this.letter$.pop();
@@ -146,6 +142,7 @@ export class GameService {
               const myPlayer = this.getOrCreateMyPlayer();
               myPlayer.disconnected = true;
             }
+            this.checkRejoinCandidate(player);
           } break;
           case 'WINNER': {
             this.winner$.next();
@@ -169,6 +166,19 @@ export class GameService {
     this.state = GameService.getInitialState();
     this.subs.forEach(t => t.unsubscribe());
     this.subs = [];
+  }
+
+  private checkRejoinCandidate(player: PlayerModel) {
+    if (this.localStorageService.localState.previousIds.includes(player.id)
+        && player.disconnected
+        && player.id !== this.peerToPeerService.getId()) {
+      logger.info(`has been ${player.id} before.`);
+      this.state.rejoinCandidate = player;
+      if (true/* || this.getOrCreateMyPlayer().name == null*/) {
+        logger.info(`auto rejoin as ${player.id}`);
+        this.rejoinAsPlayer(player);
+      }
+    }
   }
 
   private resetLocalState() {

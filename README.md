@@ -1,6 +1,6 @@
 # Bananagrams
 
-[![CircleCI](https://circleci.com/gh/domsleee/bananagrams/tree/main.svg?style=shield)](https://circleci.com/gh/domsleee/bananagrams/tree/main)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/domsleee/bananagrams/tree/main.svg?style=shield)](https://dl.circleci.com/status-badge/redirect/gh/domsleee/bananagrams/tree/main)
 
 [Live link](https://domsleee.github.io/bananagrams/)
 
