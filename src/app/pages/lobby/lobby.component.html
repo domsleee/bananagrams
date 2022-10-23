@@ -3,7 +3,7 @@
   <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
   <ul>
     <li *ngFor="let player of gameServiceState.players" [class.strikethrough]="player.disconnected">
-      {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
+      {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
     </li>
   </ul>
   <div class="name-div">

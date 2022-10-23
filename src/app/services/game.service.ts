@@ -92,6 +92,7 @@ export class GameService {
             if (isNewPlayer) {
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
+              this.sortPlayers();
             }
             new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
             this.checkRejoinCandidate(player);
@@ -314,5 +315,21 @@ export class GameService {
 
   getPlayerById(playerId: string) {
     return this.state.players.find(t => t.id == playerId);
+  }
+
+  private sortPlayers() {
+    const sortFn = (a: PlayerModel, b: PlayerModel) => {
+      const isHost = (player: PlayerModel) => player.id === this.peerToPeerService.getHostId();
+      const aIsHost = isHost(a) ? 1 : 0;
+      const bIsHost = isHost(b) ? 1 : 0;
+      if (aIsHost !== bIsHost) {
+        return bIsHost - aIsHost; // is host = at top
+      }
+      if (a.name !== b.name) {
+        return a.name < b.name ? -1 : 1;
+      }
+      return 0;
+    };
+    this.state.players = this.state.players.sort(sortFn);
   }
 }

@@ -20,6 +20,7 @@ export class LobbyComponent implements OnInit, OnDestroy {
   subs: Subscription[];
   rejoining = false;
   copied = false;
+  hostId: string;
 
   constructor(
     private gameService: GameService,
@@ -31,12 +32,15 @@ export class LobbyComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
     this.isHost = this.peerToPeerService.getIsHost();
+    this.hostId = this.peerToPeerService.getHostId();
     this.gameServiceState = this.gameService.state;
     this.gameService.initFromPeerToPeer();
     
     this.subs = [
       this.gameService.gameStart$.subscribe(t => this.gotoGame()),
     ];
+    this.name = 'guest' + (Math.random() * 1000).toFixed(0).padStart(4, '0');
+    this.setName(null);
   }
 
   private gotoGame() {
