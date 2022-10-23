@@ -32,7 +32,7 @@
     [disabled] = "rejoining || isHost  || !gameServiceState.rejoinCandidate"
     class="block-button"
     color="primary"
-  >Rejoin{{gameServiceState.rejoinCandidate?.name != null ? " as " +gameServiceState.rejoinCandidate.name : ""}}</button>
+  >Rejoin{{gameServiceState.rejoinCandidate?.name ? " as " +gameServiceState.rejoinCandidate.name : ""}}</button>
   <button
     mat-stroked-button
     (click)="joinAsSpectator()"
