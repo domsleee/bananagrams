@@ -92,10 +92,10 @@ export class GameService {
             if (isNewPlayer) {
               player = new PlayerModel(message.data.playerId);
               this.state.players.push(player);
-              this.sortPlayers();
             }
             new PlayerModelUpdater().updatePlayer(player, message.data.state, isNewPlayer);
             this.checkRejoinCandidate(player);
+            if (message.data.state.hasOwnProperty('name')) this.sortPlayers();
           } break;
           case 'GAME_START': {
             while (this.letter$.getLength() > 0) this.letter$.pop();
