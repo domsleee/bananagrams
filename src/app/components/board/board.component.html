@@ -1,4 +1,4 @@
-<body style="margin:auto; width: 100%">
+<div style="margin:auto; width: 100%">
   <div id="board" style="margin: auto; position: relative">
     <div class="dropzoneHelper">
       <div *ngFor="let square of boardState.squares"
@@ -26,6 +26,7 @@
             [disabled]="!gameServiceState.canClaimSuccess || readonly">{{gameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
           <button class="dump"
             (click)="dump()"
+            color="primary"
             [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
           <span style="font-size:15px;margin-left:5px;float:right">use arrow keys to move your tiles</span>
         </div>
@@ -37,4 +38,4 @@
       </div>
     </div>
   </div>
-</body>
+</div>

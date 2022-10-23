@@ -1,36 +1,49 @@
 <div class="container">
-  <img class="banana-img" src="{{baseHref}}assets/banana.jpeg">
+  <img class="banana-img mat-elevation-z2" src="{{baseHref}}assets/banana.jpeg">
   <p>{{gameServiceState.players.length}} players. {{gameServiceState.totalPeerCount}} in room.</p>
   <ul>
     <li *ngFor="let player of gameServiceState.players" [class.strikethrough]="player.disconnected">
-      {{player.name}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
+      {{player.name}}{{player.id === hostId ? '(host)' : ''}}{{player.id === gameServiceState.myPlayer?.id ? '(you)' : ''}}
     </li>
   </ul>
   <div class="name-div">
     <input [(ngModel)]="name" (keydown.enter)="setName($event)" type="text" maxlength="32">
     <button
+      mat-stroked-button
+      color="primary"
       style="display: inline-block;"
       class="big-button"
       (click)="setName($event)"
       [disabled]="!name || gameServiceState.totalPeerCount === 0 || rejoining"
       >Set name</button>
   </div>
+
   <button
+    mat-stroked-button
+    class="block-button"
+    color="primary"
     (click)="copyJoinLink()"
-    class="big-button block-button"
-  >Copy join link</button>
+    [disabled]="copied"
+    >{{copied ? 'Copied!' : 'Copy join link'}}</button>
+
   <button
+    mat-stroked-button
     (click)="rejoin()"
-    class="big-button block-button"
     [disabled] = "rejoining || isHost  || !gameServiceState.rejoinCandidate"
+    class="block-button"
+    color="primary"
   >Rejoin as {{gameServiceState.rejoinCandidate?.name}}?</button>
   <button
+    mat-stroked-button
     (click)="joinAsSpectator()"
-    class="big-button block-button"
+    class="block-button"
     [disabled] = "isHost || rejoining || !gameServiceState.inGame"
+    color="primary"
   >Join as spectator</button>
   <button
-    class="big-button block-button"
+    mat-raised-button
+    class="block-button"
     [disabled]="!isHost || gameServiceState.myPlayer === null"
-    (click)="startGame()">Start game</button>
+    (click)="startGame()"
+  >Start game</button>
 </div>

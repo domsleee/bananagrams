@@ -29,6 +29,8 @@ div.name-div {
 
 div.container {
   display: block;
-  margin: auto;
-  width: $menuWidth;
+}
+
+li {
+  color: var(--text-color);
 }

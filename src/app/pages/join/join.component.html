@@ -5,6 +5,9 @@
   </div>
   <div *ngIf="error">
     <p>{{error}}</p>
-    <button class="big-button" (click)="tryConnect()">Try again</button>
+    <button
+      mat-raised-button
+      class="block-button"
+      (click)="tryConnect()">Try again</button>
   </div>
 </div>

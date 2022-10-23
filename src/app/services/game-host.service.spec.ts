@@ -56,7 +56,7 @@ describe('GameHostService', () => {
     flushMessages();
 
     expect(gameService1.state.players[0].name).toBe('abc');
-    expect(gameService2.state.players[0].name).toBe('def');
+    expect(gameService2.state.players[0].name).toBe('abc');
     expect(gameService1.state.players.length).toBe(2);
     expect(gameService2.state.players.length).toBe(2);
   });
@@ -64,10 +64,6 @@ describe('GameHostService', () => {
   afterEach(() => {
     jasmine.clock().uninstall();
   })
-
-  function flushMessages() {
-    for (let i = 0; i < 10; ++i) jasmine.clock().tick(2 * 1000);
-  }
 
   it('should be created', () => {
     expect(service).toBeTruthy();
@@ -126,3 +122,57 @@ describe('GameHostService', () => {
     expect(gameService2.getPlayerById(peers[1].getId()).totalTiles).toBe(21);
   });
 });
+
+describe('GameService sort order', () => {
+  let hostService: GameHostService;
+  let gameServices: GameService[];
+  let peers: PeerToPeerServiceMock[];
+
+  beforeEach(() => {
+    peers = createPeers(4);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule, RouterTestingModule],
+      providers: [
+        ...defaultProviders,
+        { provide: PeerToPeerService, useValue: peers[0] },
+      ]
+    });
+    hostService = TestBed.inject(GameHostService);
+    gameServices = peers.map(t => getGameService(t));
+
+    jasmine.clock().install();
+    jasmine.clock().mockDate();
+
+    const names = [
+      "zzz",
+      "ghi",
+      "abf",
+      "mno",
+      "jkl",
+    ];
+
+    for (let i = 0; i < 5; ++i) {
+      gameServices[i].initFromPeerToPeer();
+      gameServices[i].updatePlayer(names[i]);
+    }
+
+    flushMessages();
+  });
+
+  it('names are correct', () => {
+    const expectedNames = ["zzz", "abf", "ghi", "jkl", "mno"];
+    for (let i = 0; i < 5; ++i) {
+      const allNames = gameServices[i].state.players.map(t => t.name);
+      expect(allNames).toEqual(expectedNames);
+    }
+  });
+
+  afterEach(() => {
+    jasmine.clock().uninstall();
+  });
+});
+
+
+function flushMessages() {
+  for (let i = 0; i < 10; ++i) jasmine.clock().tick(2 * 1000);
+}

@@ -14,6 +14,8 @@ import { JoinComponent } from './pages/join/join.component';
 import { BoardContainerComponent } from './components/board-container/board-container.component';
 import { APP_BASE_HREF, PlatformLocation } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,9 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule,
     FormsModule,
     HttpClientModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatIconModule
   ],
   providers: [
     {

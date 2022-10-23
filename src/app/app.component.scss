@@ -1,5 +1,8 @@
 $tileSize: 60px;
 
+a.nostyle {
+  color: inherit;
+}
 
 .square {
   display: inline-block;
@@ -17,4 +20,23 @@ $tileSize: 60px;
 .heading-container {
   width: 100%;
   text-align: center;
+  padding-bottom: 15px;
+}
+
+@media only screen and (max-width: 480px) {
+  .square {
+    font-size: 32px;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 2px;
+    border: 1px solid black;
+  }
+}
+
+:host ::ng-deep router-outlet + * {
+  position:absolute;
+  left:0;
+  top:0;
+  width: 100%;
 }

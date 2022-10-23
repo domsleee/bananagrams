@@ -1,10 +1,43 @@
+
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+// Define a light theme
+$light-primary: mat.define-palette(mat.$blue-palette);
+$light-accent: mat.define-palette(mat.$pink-palette);
+$light-theme: mat.define-light-theme((
+ color: (
+   primary: $light-primary,
+   accent: $light-accent,
+ )
+));
+
+// Define a dark theme
+$dark-primary: mat.define-palette(mat.$blue-palette, 300);
+$dark-accent: mat.define-palette(mat.$light-blue-palette, 100);
+$dark-theme: mat.define-dark-theme((
+ color: (
+   primary: $dark-primary,
+   accent: $dark-accent,
+ )
+));
+
+// light theme by default
+@include mat.core-color($light-theme);
+@include mat.button-color($light-theme);
+
+
+@import 'src/variables.scss';
+
+
 /* You can add global styles to this file, and also import other style files */
 body, html {
   font-family: helvetica, sans-serif;
 }
 
 .banana {
-  background-image: url('/bananagrams/assets/small-banana.png');
+  background-image: url('/assets/small-banana.png');
   background-repeat: no-repeat;
   width: 40px;
   height: 28px;
@@ -21,10 +54,60 @@ img.banana-img {
   display: block;
   width: 200px;
   margin: auto;
+  border-radius: var(--border-radius);
+  @include mat.elevation(8);
 }
-
 
 button.big-button {
   display: block;
   line-height: 2.5em;
+}
+
+.container {
+  width: $menuWidth;
+  max-width: 100%;
+  margin: auto;
+}
+
+html {
+  --text-color: black;
+  --bg-color: white;
+  --link-color: hsl(206,100%,40%);
+  --border-radius: 0px;
+}
+.dark {
+  --text-color: hsla(0,0%,100%,.7);
+  --bg-color: #323437;
+  --link-color: lightblue;
+  --border-radius: 20px;
+
+  @include mat.core-theme($dark-theme);
+  @include mat.button-theme($dark-theme);
+}
+
+html {
+  background: var(--bg-color);
+}
+
+a {
+  color: var(--link-color);
+}
+
+p {
+  color: var(--text-color);
+}
+
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+button.mat-button-base.block-button {
+  font-size: 1.2em;
+  height: 50px;
+  width: 100%;
+}
+
+#startArea {
+  .mat-button-base {
+    line-height: 1.5em;
+    padding: 0;
+  }
 }

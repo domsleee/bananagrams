@@ -3,6 +3,6 @@
 export type Letter = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z';
 
 // todo: sync with scss
-export const GRID_SIZE = 22;
-export const TILE_SIZE = 25;
+export const GRID_SIZE = 22; //11;
+export const TILE_SIZE = 25; //35;
 export const START_AREA_ROWS = 2;

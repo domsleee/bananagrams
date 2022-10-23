@@ -5,17 +5,17 @@ export const fadeAnimation =
     transition( '* => *', [
       query(':enter', [
         style({ opacity: 0 }),
-      ]),
+      ], {optional: true}),
       sequence([
         query(':leave', [
           sequence([
-            animate('0.1s', style({opacity: 0})),
+            animate('100ms', style({opacity: 0})),
             style({position: 'absolute', visibility: 'hidden'})
           ])
         ], { optional: true }),
         query(':enter', [
-          animate('0.1s', style({ opacity: 1 }))
-        ])
+          animate('100ms', style({ opacity: 1 }))
+        ], {optional: true})
       ])
     ])
   ]);
