@@ -175,7 +175,7 @@ export class GameService {
         && player.id !== this.peerToPeerService.getId()) {
       logger.info(`has been ${player.id} before.`);
       this.state.rejoinCandidate = player;
-      if (true/* || this.getOrCreateMyPlayer().name == null*/) {
+      if (!this.state.inGame/* || this.getOrCreateMyPlayer().name == null*/) {
         logger.info(`auto rejoin as ${player.id}`);
         this.rejoinAsPlayer(player);
       }
