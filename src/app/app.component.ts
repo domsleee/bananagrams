@@ -21,7 +21,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("SLFJS");
     this.imagePreloader.preloadImages(['/assets/banana.jpeg']);
   }
 }
