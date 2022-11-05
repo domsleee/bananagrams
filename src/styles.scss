@@ -36,6 +36,10 @@ body, html {
   font-family: helvetica, sans-serif;
 }
 
+.mat-raised-button {
+  transition-property: box-shadow!important;
+}
+
 .banana {
   background-image: url('/assets/small-banana.png');
   background-repeat: no-repeat;
