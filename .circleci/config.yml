@@ -20,6 +20,7 @@ jobs:
     # CircleCI will report the results back to your VCS provider.
     steps:
       - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - checkout
       - restore_cache:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "yarn.lock" }}
