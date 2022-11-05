@@ -27,7 +27,6 @@ export interface GameServiceState extends ISharedState {
   canClaimSuccess: boolean;
   players: Array<PlayerModel>;
   myPlayer: PlayerModel | null;
-  rejoinCandidate: PlayerModel | null;
 };
 
 export interface ISharedState {
@@ -111,10 +110,6 @@ export class GameService {
               this.state.players = this.state.players.filter(t => t.id !== message.from);
               (player as any).id = message.from;
               player.disconnected = false;
-
-              if (player.id === this.peerToPeerService.getId()) {
-                this.state.rejoinCandidate = null;
-              }
             }
           } break;
           case 'RECEIVE_LETTERS': {
@@ -174,11 +169,8 @@ export class GameService {
         && player.disconnected
         && player.id !== this.peerToPeerService.getId()) {
       logger.info(`has been ${player.id} before.`);
-      this.state.rejoinCandidate = player;
-      if (!this.state.inGame/* || this.getOrCreateMyPlayer().name == null*/) {
-        logger.info(`auto rejoin as ${player.id}`);
-        this.rejoinAsPlayer(player);
-      }
+      logger.info(`auto rejoin as ${player.id}`);
+      this.rejoinAsPlayer(player);
     }
   }
 
@@ -308,8 +300,7 @@ export class GameService {
       inGame: false,
       nextPeelWins: false,
       gameOver: false,
-      myPlayer: null,
-      rejoinCandidate: null
+      myPlayer: null
     }
   }
 
