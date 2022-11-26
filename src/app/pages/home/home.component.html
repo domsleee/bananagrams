@@ -1,11 +1,12 @@
 <div class="container">
-    <button
-      mat-raised-button
-      class="block-button"
-      (click)="createGame()"
-      [disabled]="loading">
-      {{loading ? 'Creating...' : 'Create game'}}</button>
+  <button
+    mat-raised-button
+    class="block-button"
+    (click)="createGame()"
+    [disabled]="loading">
+    {{loading ? 'Creating...' : 'Create game'}}</button>
 
-  <p>To join a game, open the lobby URL, e.g. <a [href]="url">{{url}}</a></p>
+  <p>Play <a target="_blank" href="https://bananagrams.com/products/bananagrams">bananagrams</a> online with your friends or against the clock, and be the one who finishes their stack first!</p>
+  <p>To join a game, open the join link, e.g. <a [href]="url" _target="_blank">{{url}}</a></p>
 
 </div>

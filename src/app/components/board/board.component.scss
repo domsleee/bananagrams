@@ -106,3 +106,12 @@ $areaPadding: 5px;
 button.win, button.dump {
   display: inline-block;
 }
+
+#startAreaDescriptions {
+  p {
+    color: black;
+    margin: 0;
+    display: inline-block;
+    font-size: 15px;
+  }
+}
