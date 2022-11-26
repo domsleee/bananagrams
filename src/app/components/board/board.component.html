@@ -20,7 +20,9 @@
 
       <div id="startArea">
         <div>
-          <div style="font-size:15px;">tiles remaining: {{gameServiceState.tilesRemaining}}</div>
+          <div id="startAreaDescriptions">
+            <p>tiles remaining: {{gameServiceState.tilesRemaining}}</p>
+          </div>
           <button class="win"
             (click)="claimSuccess()"
             [disabled]="!gameServiceState.canClaimSuccess || readonly">{{gameServiceState.nextPeelWins ? 'win?' : 'peel'}}</button>
@@ -28,7 +30,7 @@
             (click)="dump()"
             color="primary"
             [disabled]="!gameServiceState.canDump || !lastSquare || playerModel.isEliminated || readonly">dump</button>
-          <span style="font-size:15px;margin-left:5px;float:right">use arrow keys to move your tiles</span>
+          <span style="font-size:15px;margin-left:5px;float:right">use mouse + arrow keys to move your tiles</span>
         </div>
         <div class="dropzone droppable"
           *ngFor="let zoneIndex of bottomDropzones"
