@@ -4,6 +4,14 @@
 
 [Live link](https://domsleee.github.io/bananagrams/)
 
+## Usage
+
+This project uses `yarn`, to get started:
+```bash
+yarn
+yarn start
+```
+
 ## What dictionary is used?
 
 This uses the Collins Scrabble Words (2019) dictionary.
