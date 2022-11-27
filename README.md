@@ -30,3 +30,10 @@ To setup a local game (single player), similar parameters can be used:
 
 http://localhost:4200/local?tiles=AA&numTiles=1
 
+## Running circleci locally
+After you have installed docker, the guide [from here](https://github.com/CircleCI-Public/circleci-cli/issues/449) is helpful:
+
+```bash
+curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | sudo bash
+circleci local execute --job build-and-test
+```

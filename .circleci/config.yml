@@ -3,10 +3,7 @@
 version: 2.1
 
 orbs:
-  # The Node.js orb contains a set of prepackaged CircleCI configuration you can utilize
-  # Orbs reduce the amount of configuration required for common tasks. 
-  # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/node@4.1
+  browser-tools: circleci/browser-tools@1.4.0
 
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
@@ -19,6 +16,7 @@ jobs:
     # Then run your tests!
     # CircleCI will report the results back to your VCS provider.
     steps:
+      - browser-tools/install-chrome
       - checkout
       - restore_cache:
           key: AngularCircleCI-{{ .Branch }}-{{ checksum "yarn.lock" }}
@@ -28,7 +26,7 @@ jobs:
           paths:
             - "node_modules"
       
-      - run: mkdir ~/junit
+      - run: mkdir junit
 
       - run: 
           command: xvfb-run -a yarn run test --no-progress --browsers=ChromeHeadlessCI --watch=false
@@ -46,7 +44,7 @@ workflows:
   # Below is the definition of your workflow.
   # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
   # CircleCI will run this workflow on every commit.
-  # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows
+  # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/configuration-reference/#workflows
   build-and-test: 
     jobs:
       - build-and-test:
