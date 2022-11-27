@@ -3,6 +3,7 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "plugins": ["unused-imports"],
   "overrides": [
     {
       "files": [
@@ -38,7 +39,9 @@
         "indent": ["error", 2, {
           "SwitchCase": 1,
           "MemberExpression": "off"
-        }]
+        }],
+        "unused-imports/no-unused-imports": "error",
+        "no-multiple-empty-lines": "error"
       }
     },
     {

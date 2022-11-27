@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getLogger } from 'loglevel';
+import { getLogger } from './logger';
 import { Subscription } from 'rxjs';
 import { Letter } from '../shared/defs';
 import { Multiset } from '../shared/multiset';

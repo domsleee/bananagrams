@@ -1,12 +1,10 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { Component, Inject, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { GameHostService } from 'src/app/services/game-host.service';
 import { GameService, GameServiceState } from 'src/app/services/game.service';
 import { NavigationService } from 'src/app/services/navigation.service';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
-import { RouteNames } from '../routes';
 
 @Component({
   selector: 'app-lobby',

@@ -23,7 +23,7 @@ export class NavigationService {
   }
 
   private wrappedNavigate(commands: any[], extras?: NavigationExtras) {
-    this.ngZone.run(() => {
+    return this.ngZone.run(() => {
       return this.router.navigate(commands, extras);
     })
   }
