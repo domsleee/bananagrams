@@ -17,7 +17,8 @@ export class AppComponent implements OnInit {
 
   constructor(private imagePreloader: ImagePreloaderService) {}
   public getRouterOutletState(outlet) {
-    return outlet.isActivated ? outlet.activatedRoute : '';
+    const r = outlet.isActivated ? outlet.activatedRoute : 'INACTIVE';
+    return r;
   }
 
   ngOnInit() {

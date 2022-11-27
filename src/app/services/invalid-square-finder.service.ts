@@ -1,4 +1,3 @@
-import { invalid } from '@angular/compiler/src/render3/view/util';
 import { Injectable } from '@angular/core';
 import { SquareModel } from '../models/square-model';
 import { GRID_SIZE } from '../shared/defs';

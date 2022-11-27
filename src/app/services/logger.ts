@@ -1,4 +1,4 @@
-import * as log from 'loglevel';
+import log from 'loglevel';
 import * as prefix from 'loglevel-plugin-prefix';
 import { BoundedLogQueue } from '../utils/bounded-log-queue';
 

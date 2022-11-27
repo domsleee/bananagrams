@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import Peer, { PeerJSOption } from 'peerjs';
+import Peer, { PeerJSOption, DataConnection } from 'peerjs';
 import { interval, ReplaySubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IMessage, MessageData } from '../shared/peer-to-peer/defs';
@@ -21,7 +21,7 @@ export class PeerToPeerService {
 
   protected isHost = true;
   protected isConnected = false;
-  protected connections: {[key: string]: Peer.DataConnection} = {};
+  protected connections: {[key: string]: DataConnection} = {};
 
   connectionAdded = new Subject<string>();
   connectionRemoved = new Subject<string>();
@@ -162,11 +162,11 @@ export class PeerToPeerService {
     });
   }
 
-  private attachErrorAndCloseConnEvents(conn: Peer.DataConnection, additionalFn?: (err?: string) => void) {
+  private attachErrorAndCloseConnEvents(conn: DataConnection, additionalFn?: (err?: string) => void) {
     conn.on('error', (err) => {
       logger.error(`connection: ${conn.peer} error! ${err}`);
       this.onPeerDisconnected(conn);
-      if (additionalFn != null) additionalFn(err);
+      if (additionalFn != null) additionalFn(err as any);
     });
 
     this.attachToConnCloseEvents(conn, () => {
@@ -176,7 +176,7 @@ export class PeerToPeerService {
     });
   }
 
-  private attachToConnCloseEvents(conn: Peer.DataConnection, fn: () => void) {
+  private attachToConnCloseEvents(conn: DataConnection, fn: () => void) {
     conn.on('close', () => fn());
     // @ts-ignore
     conn.on('iceStateChanged', (status: any) => {
@@ -186,7 +186,7 @@ export class PeerToPeerService {
     });
   }
 
-  private onPeerDisconnected(conn: Peer.DataConnection) {
+  private onPeerDisconnected(conn: DataConnection) {
     if (!this.isHost) {
       this.isConnected = false;
     }
@@ -216,7 +216,7 @@ export class PeerToPeerService {
     this.messageSubject.subject.next(message);
   }
 
-  private addConnectionIfNotExist(name: string, conn: Peer.DataConnection) {
+  private addConnectionIfNotExist(name: string, conn: DataConnection) {
     if (!(name in this.connections)) {
       logger.info(`new connection! ${name}`);
       this.connections[name] = conn;
