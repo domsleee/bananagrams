@@ -165,7 +165,8 @@ export class GameService {
   private checkRejoinCandidate(player: PlayerModel) {
     if (this.localStorageService.localState.previousIds.includes(player.id)
         && player.disconnected
-        && player.id !== this.peerToPeerService.getId()) {
+        && player.id !== this.peerToPeerService.getId()
+        && player.id !== this.peerToPeerService.getHostId()) {
       logger.info(`has been ${player.id} before.`);
       logger.info(`auto rejoin as ${player.id}`);
       this.rejoinAsPlayer(player);

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import Peer, { PeerJSOption, DataConnection } from 'peerjs';
+import { Peer, PeerJSOption, DataConnection } from 'peerjs';
 import { interval, ReplaySubject, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IMessage, MessageData } from '../shared/peer-to-peer/defs';
@@ -179,7 +179,7 @@ export class PeerToPeerService {
   private attachToConnCloseEvents(conn: DataConnection, fn: () => void) {
     conn.on('close', () => fn());
     // @ts-ignore
-    conn.on('iceStateChanged', (status: any) => {
+    conn.on('iceStateChanged', (status: RTCIceConnectionState) => {
       if (status === 'disconnected') {
         fn();
       }

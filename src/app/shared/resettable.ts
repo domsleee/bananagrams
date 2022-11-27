@@ -19,7 +19,7 @@ export function resettable<T>(factory: () => Subject<T>): {
       subscription.unsubscribe();
       destination = factory();
       subscription = source.subscribe(destination);
-      resetter.next();
+      resetter.next(null);
     },
     subject: source
   };
