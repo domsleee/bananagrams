@@ -5684,6 +5684,11 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+ng-mocks@^14.3.4:
+  version "14.3.4"
+  resolved "https://registry.yarnpkg.com/ng-mocks/-/ng-mocks-14.3.4.tgz#957923bfc026ceab39dff4b73076a65fb3f8ab50"
+  integrity sha512-yatD0mw6pI8OkIhx8tNpg5+vx998FthejrR5zj0snvhSvDIEsYzOBrVI/PZVWbW4Wx8O/aDHatj3s1Dyu9t2VQ==
+
 nice-napi@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/nice-napi/-/nice-napi-1.0.2.tgz#dc0ab5a1eac20ce548802fc5686eaa6bc654927b"

@@ -53,6 +53,7 @@
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "~1.7.0",
     "karma-junit-reporter": "^2.0.1",
+    "ng-mocks": "^14.3.4",
     "patch-package": "^6.4.7",
     "source-map-explorer": "^2.5.3",
     "tslib": "^2.4.0",

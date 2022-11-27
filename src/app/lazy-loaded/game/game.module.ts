@@ -18,6 +18,10 @@ import { MatButtonModule } from '@angular/material/button';
     CommonModule,
     GameRoutingModule,
     MatButtonModule,
+  ],
+  exports: [
+    BoardComponent,
+    BoardContainerComponent
   ]
 })
 export class GameModule { }
