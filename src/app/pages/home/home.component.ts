@@ -37,7 +37,7 @@ export class HomeComponent implements OnInit {
     this.loading = true;
     try {
       await this.gameHostService.createGame();
-      this.navigationService.gotoLobby();
+      await this.navigationService.gotoLobby();
     }
     finally {
       this.loading = false;

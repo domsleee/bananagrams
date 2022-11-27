@@ -1,5 +1,4 @@
 import { Letter } from "../shared/defs";
-import { DropzoneModel } from "./dropzone-model";
 
 export class SquareModel {
   readonly id;

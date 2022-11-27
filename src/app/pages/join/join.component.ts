@@ -1,8 +1,6 @@
 import { APP_BASE_HREF } from '@angular/common';
-import { ThisReceiver } from '@angular/compiler';
 import { Component, Inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import Peer from 'peerjs';
 import { PeerToPeerService } from 'src/app/services/peer-to-peer.service';
 import { RouteNames } from '../routes';
 

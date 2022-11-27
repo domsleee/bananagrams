@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { PlayerModel } from 'src/app/models/player-model';
 import { getLogger } from 'src/app/services/logger';
 import { KeyboardEventsService } from 'src/app/services/keyboard-events.service';
-import { fadeAnimation, myInsertRemoveTrigger } from 'src/app/animations/fade.animation';
+import { myInsertRemoveTrigger } from 'src/app/animations/fade.animation';
 
 const logger = getLogger('board');
 
