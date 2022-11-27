@@ -19,8 +19,6 @@ export class IsConnectedGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree
   {
     if (!(this.peerToPeerService.getIsConnected())) {
-      console.log(route.params);
-      console.log(route);
       return route.params.id
         ? this.router.navigate([`${RouteNames.JOIN}/${route.params.id}`])
         : this.router.navigate([RouteNames.HOME]);
